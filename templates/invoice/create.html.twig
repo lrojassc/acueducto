@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello InvoiceController!{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="mb-3 mt-3">
+        <h2 class="text-success text-lg-center">Registro de Factura</h2>
+    </div>
+    {{ form(form_create_invoice) }}
+</div>
+{% endblock %}
