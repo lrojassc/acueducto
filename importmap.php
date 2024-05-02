@@ -25,4 +25,7 @@ return [
     '@hotwired/turbo' => [
         'version' => '7.3.0',
     ],
+    '@symfony/stimulus-bridge' => [
+        'version' => '3.2.2',
+    ],
 ];

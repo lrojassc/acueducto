@@ -83,12 +83,12 @@ class User
 
     public function getName(): ?string
     {
-        return $this->name;
+        return ucwords($this->name);
     }
 
     public function setName(string $name): static
     {
-        $this->name = $name;
+        $this->name = preg_replace('/[^a-zA-Z0-9\s]/', '', strtolower($name));
 
         return $this;
     }
@@ -112,7 +112,7 @@ class User
 
     public function setDocumentNumber(string $document_number): static
     {
-        $this->document_number = $document_number;
+        $this->document_number = preg_replace('/[^0-9]/', '', $document_number);
 
         return $this;
     }
@@ -136,7 +136,7 @@ class User
 
     public function setPhoneNumber(?string $phone_number): static
     {
-        $this->phone_number = $phone_number;
+        $this->phone_number =  preg_replace('/[^0-9]/', '', $phone_number);
 
         return $this;
     }
@@ -184,7 +184,7 @@ class User
 
     public function setCity(string $city): static
     {
-        $this->city = $city;
+        $this->city = preg_replace('/[^a-zA-Z0-9\s]/', '', strtolower($city));
 
         return $this;
     }
@@ -196,7 +196,7 @@ class User
 
     public function setMunicipality(string $municipality): static
     {
-        $this->municipality = $municipality;
+        $this->municipality = preg_replace('/[^a-zA-Z0-9\s]/', '', strtolower($municipality));;
 
         return $this;
     }
@@ -208,7 +208,7 @@ class User
 
     public function setPassword(string $password): static
     {
-        $this->password = $password;
+        $this->password = password_hash($password, PASSWORD_DEFAULT);
 
         return $this;
     }

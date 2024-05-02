@@ -32,7 +32,7 @@ class CreateUserType extends AbstractType
                 ]
             ])
             ->add('document_number', IntegerType::class, [
-                'label' => 'Numero Documento',
+                'label' => 'Numero de Documento',
                 'required' => true,
             ])
             ->add('email', EmailType::class, [
@@ -62,8 +62,9 @@ class CreateUserType extends AbstractType
                     'SUSPENDIDO' => 'SUSPENDIDO',
                 ]
             ])
-            ->add('Crear', SubmitType::class, [
-                'attr' => ['class' => 'btn btn-dark']
+            ->add('save', SubmitType::class, [
+                'label' => 'Crear Usuario',
+                'attr' => ['class' => 'btn btn-outline-secondary']
             ])
         ;
     }

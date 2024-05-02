@@ -1,12 +1,71 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello UserController!{% endblock %}
+{% block title %}Crear Usuario{% endblock %}
 
 {% block body %}
 <div class="container">
-    <div class="mb-3 mt-3">
-        <h2 class="text-success text-lg-center">Registro de Usuario</h2>
+    <div class="justify-content-center">
+        <br>
+        <div class="card">
+            <h5 class="card-header">Creación de Usuario</h5>
+            <div class="card-body">
+                {{ form_start(form_create_user) }}
+                <div class="row">
+                    <div class="form-floating mb-3 mt-3 col-4">
+                        <input type="text" class="form-control" name="{{ field_name(form_create_user.name) }}" value="{{ field_value(form_create_user.name) }}">
+                        <label>{{ field_label(form_create_user.name) }}</label>
+                    </div>
+                    <div class="form-floating mb-3 mt-3 col-4">
+                        <select class="form-select" name="{{ field_name(form_create_user.document_type) }}">
+                            {% for label, value in field_choices(form_create_user.document_type) %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <label>{{ field_label(form_create_user.document_type) }}</label>
+                    </div>
+                    <div class="form-floating mb-3 mt-3 col-4">
+                        <input type="number" class="form-control" name="{{ field_name(form_create_user.document_number) }}" value="{{ field_value(form_create_user.document_number) }}">
+                        <label>{{ field_label(form_create_user.document_number) }}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-floating mb-3 mt-3 col-4">
+                        <input type="text" class="form-control" name="{{ field_name(form_create_user.email) }}" value="{{ field_value(form_create_user.email) }}">
+                        <label>{{ field_label(form_create_user.email) }}</label>
+                    </div>
+                    <div class="form-floating mb-3 mt-3 col-4">
+                        <input type="number" class="form-control" name="{{ field_name(form_create_user.phone_number) }}" value="{{ field_value(form_create_user.phone_number) }}">
+                        <label>{{ field_label(form_create_user.phone_number) }}</label>
+                    </div>
+                    <div class="form-floating mb-3 mt-3 col-4">
+                        <input type="text" class="form-control" name="{{ field_name(form_create_user.address) }}" value="{{ field_value(form_create_user.address) }}">
+                        <label>{{ field_label(form_create_user.address) }}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-floating mb-3 mt-3 col-4">
+                        <input type="text" class="form-control" name="{{ field_name(form_create_user.city) }}" value="{{ field_value(form_create_user.city) }}">
+                        <label>{{ field_label(form_create_user.city) }}</label>
+                    </div>
+                    <div class="form-floating mb-3 mt-3 col-4">
+                        <input type="text" class="form-control" name="{{ field_name(form_create_user.municipality) }}" value="{{ field_value(form_create_user.municipality) }}">
+                        <label>{{ field_label(form_create_user.municipality) }}</label>
+                    </div>
+                    <div class="form-floating mb-3 mt-3 col-4">
+                        <select class="form-select" name="{{ field_name(form_create_user.status) }}">
+                            {% for label, value in field_choices(form_create_user.status) %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <label>{{ field_label(form_create_user.status) }}</label>
+                    </div>
+                </div>
+
+                {{ form_row(form_create_user.save) }}
+                {{ form_end(form_create_user) }}
+            </div>
+        </div>
     </div>
-    {{ form(form_create_user) }}
+
 </div>
 {% endblock %}

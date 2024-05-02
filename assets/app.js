@@ -1,10 +1,10 @@
-import './bootstrap.js';
-/*
- * Welcome to your app's main JavaScript file!
- *
- * This file will be included onto the page via the importmap() Twig function,
- * which should already be in your base.html.twig.
- */
-import './styles/app.css';
+import './styles/app.scss';
+import 'bootstrap';
+import 'datatables.net';
+import 'datatables.net-dt';
 
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+$('#datatable-users').DataTable({
+    language: {
+        url: '//cdn.datatables.net/plug-ins/2.0.5/i18n/es-ES.json',
+    }
+});
