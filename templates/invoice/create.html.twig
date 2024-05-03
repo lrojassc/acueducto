@@ -4,9 +4,21 @@
 
 {% block body %}
 <div class="container">
-    <div class="mb-3 mt-3">
-        <h2 class="text-success text-lg-center">Registro de Factura</h2>
+    <div class="justify-content-center">
+        <br>
+        {% for flashMessage in app.flashes('success') %}
+            <div class="alert alert-primary" style="background-color: #add9f9!important;" role="alert">
+                {{ flashMessage }}
+            </div>
+        {% endfor %}
+
+        <div class="card">
+            <h5 class="card-header">Creación de Factura</h5>
+            <div class="card-body">
+                {{ form_start(form_create_invoice) }}
+                {{ form_end(form_create_invoice) }}
+            </div>
+        </div>
     </div>
-    {{ form(form_create_invoice) }}
 </div>
 {% endblock %}

@@ -5,11 +5,14 @@ namespace App\Form;
 use App\Entity\Invoice;
 use App\Entity\Subscription;
 use App\Entity\User;
-use Doctrine\ORM\EntityRepository;
+use App\Repository\SubscriptionRepository;
+use App\Repository\UserRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -19,12 +22,30 @@ class CreateInvoiceType extends AbstractType
     {
         $builder
             ->add('value', IntegerType::class,  [
-                'label' => 'Valor de la factura',
+                'label' => 'Valor de la Factura',
                 'required' => TRUE
             ])
-            ->add('description')
-            ->add('year_invoiced')
-            ->add('month_invoiced')
+            ->add('description', TextType::class, [
+                'label' => 'Descripción de la Factura',
+            ])
+            ->add('month_invoiced', ChoiceType::class, [
+                'label' => 'Mes de la Factura',
+                'required' => true,
+                'choices' => [
+                    'ENERO' => 'ENERO',
+                    'FEBRERO' => 'FEBRERO',
+                    'MARZO' => 'MARZO',
+                    'ABRIL' => 'ABRIL',
+                    'MAYO' => 'MAYO',
+                    'JUNIO' => 'JUNIO',
+                    'JULIO' => 'JULIO',
+                    'AGOSTO' => 'AGOSTO',
+                    'SEPTIEMBRE' => 'SEPTIEMBRE',
+                    'OCTUBRE' => 'OCTUBRE',
+                    'NOVIEMBRE' => 'NOVIEMBRE',
+                    'DICIEMBRE' => 'DICIEMBRE',
+                ]
+            ])
             ->add('concept', ChoiceType::class, [
                 'label' => 'Concepto',
                 'required' => true,
@@ -37,18 +58,26 @@ class CreateInvoiceType extends AbstractType
             ->add('user', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'name',
+                'label' => 'Seleccione un Usuario Suscriptor',
             ])
             ->add('subscription', EntityType::class, [
                 'class' => Subscription::class,
-                'choice_label' => 'id',
+                'choice_label' => 'service',
+            ])
+
+            ->add('save', SubmitType::class, [
+                'label' => 'Crear Factura',
+                'attr' => ['class' => 'btn btn-outline-secondary']
             ])
         ;
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Invoice::class,
+            'csrf_protection' => true,
         ]);
     }
 }

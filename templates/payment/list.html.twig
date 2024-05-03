@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lista de Pagos Realizados{% endblock %}
+
+{% block body %}
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col">
+                <table id="datatable_payments" class="table table-striped table-bordered" data-page-length='50' style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th>No. Pago</th>
+                            <th>Valor Pagado</th>
+                            <th>Desc. Pago</th>
+                            <th>Metodo</th>
+                            <th>Mes Pagado</th>
+                            <th>Desc. Factura</th>
+                            <th>Concepto</th>
+                            <th>Suscriptor</th>
+                            <th>Servicio</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for payment in payments %}
+                        <tr>
+                            <td>{{ payment.id }}</td>
+                            <td>${{ payment.value|number_format(0, '.', '.') }}</td>
+                            <td>{{ payment.description }}</td>
+                            <td>{{ payment.method }}</td>
+                            <td>{{ payment.monthInvoiced }}</td>
+                            <td>{{ payment.invoice.description }}</td>
+                            <td>{{ payment.invoice.concept }}</td>
+                            <td>{{ payment.invoice.user.name }}</td>
+                            <td>{{ payment.invoice.subscription.service }}</td>
+                            <td>Imprimir</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

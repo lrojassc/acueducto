@@ -6,13 +6,19 @@
 <div class="container">
     <div class="justify-content-center">
         <br>
+        {% for flashMessage in app.flashes('success') %}
+            <div class="alert alert-primary" style="background-color: #add9f9!important;" role="alert">
+                {{ flashMessage }}
+            </div>
+        {% endfor %}
+
         <div class="card">
             <h5 class="card-header">Creación de Usuario</h5>
             <div class="card-body">
                 {{ form_start(form_create_user) }}
                 <div class="row">
                     <div class="form-floating mb-3 mt-3 col-4">
-                        <input type="text" class="form-control" name="{{ field_name(form_create_user.name) }}" value="{{ field_value(form_create_user.name) }}">
+                        <input type="text" class="form-control" name="{{ field_name(form_create_user.name) }}" value="{{ field_value(form_create_user.name) }}" required>
                         <label>{{ field_label(form_create_user.name) }}</label>
                     </div>
                     <div class="form-floating mb-3 mt-3 col-4">
@@ -24,7 +30,7 @@
                         <label>{{ field_label(form_create_user.document_type) }}</label>
                     </div>
                     <div class="form-floating mb-3 mt-3 col-4">
-                        <input type="number" class="form-control" name="{{ field_name(form_create_user.document_number) }}" value="{{ field_value(form_create_user.document_number) }}">
+                        <input type="number" class="form-control" name="{{ field_name(form_create_user.document_number) }}" value="{{ field_value(form_create_user.document_number) }}" required>
                         <label>{{ field_label(form_create_user.document_number) }}</label>
                     </div>
                 </div>
@@ -34,21 +40,21 @@
                         <label>{{ field_label(form_create_user.email) }}</label>
                     </div>
                     <div class="form-floating mb-3 mt-3 col-4">
-                        <input type="number" class="form-control" name="{{ field_name(form_create_user.phone_number) }}" value="{{ field_value(form_create_user.phone_number) }}">
+                        <input type="number" class="form-control" name="{{ field_name(form_create_user.phone_number) }}" value="{{ field_value(form_create_user.phone_number) }}" required>
                         <label>{{ field_label(form_create_user.phone_number) }}</label>
                     </div>
                     <div class="form-floating mb-3 mt-3 col-4">
-                        <input type="text" class="form-control" name="{{ field_name(form_create_user.address) }}" value="{{ field_value(form_create_user.address) }}">
+                        <input type="text" class="form-control" name="{{ field_name(form_create_user.address) }}" value="{{ field_value(form_create_user.address) }}" required>
                         <label>{{ field_label(form_create_user.address) }}</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="form-floating mb-3 mt-3 col-4">
-                        <input type="text" class="form-control" name="{{ field_name(form_create_user.city) }}" value="{{ field_value(form_create_user.city) }}">
+                        <input type="text" class="form-control" name="{{ field_name(form_create_user.city) }}" value="{{ field_value(form_create_user.city) }}" required>
                         <label>{{ field_label(form_create_user.city) }}</label>
                     </div>
                     <div class="form-floating mb-3 mt-3 col-4">
-                        <input type="text" class="form-control" name="{{ field_name(form_create_user.municipality) }}" value="{{ field_value(form_create_user.municipality) }}">
+                        <input type="text" class="form-control" name="{{ field_name(form_create_user.municipality) }}" value="{{ field_value(form_create_user.municipality) }}" required>
                         <label>{{ field_label(form_create_user.municipality) }}</label>
                     </div>
                     <div class="form-floating mb-3 mt-3 col-4">
@@ -66,6 +72,5 @@
             </div>
         </div>
     </div>
-
 </div>
 {% endblock %}
