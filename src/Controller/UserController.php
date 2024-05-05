@@ -76,4 +76,18 @@ class UserController extends AbstractController
             'users' => $entityManager->getRepository(User::class)->findAll()
         ]);
     }
+
+    #[Route('/show/user/{user}', name: 'show_user')]
+    public function show(int $user, EntityManagerInterface $entityManager): Response
+    {
+        $user_data = $entityManager->getRepository(User::class)->findOneBy(['id' => $user]);
+        $subscription_status = $user_data->getPaidSubscription() === 'PAGADA'
+            ? 'Esta suscripción se encuentra PAGADA completamente'
+            : 'Esta suscripción aún NO SE HA PAGADO completamente';
+
+        return $this->render('user/show.html.twig', [
+            'user' => $user_data,
+            'subscription_status' => $subscription_status
+        ]);
+    }
 }

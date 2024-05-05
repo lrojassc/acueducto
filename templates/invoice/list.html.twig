@@ -32,11 +32,17 @@
                             <td>{{ invoice.status }}</td>
                             <td><a href="#">{{ invoice.user.name }}</a></td>
                             <td>
-                                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                    <button type="button" class="btn btn-success">Ver</button>
-                                    <button type="button" class="btn btn-warning">Editar</button>
-                                    <button type="button" class="btn btn-danger">Eliminar</button>
-                                </div>
+                                {% if invoice.value == 0 and invoice.status == 'PAGADA' %}
+                                    <div class="btn-group" role="group" style="width: 100%">
+                                        <button type="button" class="btn btn-info">Imprimir Comprobante</button>
+                                    </div>
+                                {% else %}
+                                    <div class="btn-group" role="group" style="width: 100%">
+                                        <button type="button" class="btn btn-success">Pagar</button>
+                                        <button type="button" class="btn btn-warning">Editar</button>
+                                        <button type="button" class="btn btn-danger">Eliminar</button>
+                                    </div>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}

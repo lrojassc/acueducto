@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Crear Usuario{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="justify-content-center">
+        <br>
+        {% for flashMessage in app.flashes('success') %}
+            <div class="alert alert-primary" style="background-color: #add9f9!important;" role="alert">
+                {{ flashMessage }}
+            </div>
+        {% endfor %}
+
+        <!--Información del usuario-->
+        <div class="container">
+            <div class="card">
+                <div class="card-header">Ver Usuario</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-floating mb-3 mt-3 col-4">
+                            <input type="text" class="form-control" value="{{ user.name }}" readonly>
+                            <label>Nombre de Usuario</label>
+                        </div>
+                        <div class="form-floating mb-3 mt-3 col-4">
+                            <input type="text" class="form-control" value="{{ user.documentType }}" readonly>
+                            <label>Tipo de Documento</label>
+                        </div>
+                        <div class="form-floating mb-3 mt-3 col-4">
+                            <input type="number" class="form-control" value="{{ user.documentNumber }}" readonly>
+                            <label>Número de Documento</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-floating mb-3 mt-3 col-4">
+                            <input type="text" class="form-control" value="{{ user.email }}" readonly>
+                            <label>Correo Electronico</label>
+                        </div>
+                        <div class="form-floating mb-3 mt-3 col-4">
+                            <input type="number" class="form-control" value="{{ user.phoneNumber }}" readonly>
+                            <label>Número de Telefono</label>
+                        </div>
+                        <div class="form-floating mb-3 mt-3 col-4">
+                            <input type="text" class="form-control" value="{{ user.address }}" readonly>
+                            <label>Dirección</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-floating mb-3 mt-3 col-4">
+                            <input type="text" class="form-control" value="{{ user.city }}" readonly>
+                            <label>Ciudad</label>
+                        </div>
+                        <div class="form-floating mb-3 mt-3 col-4">
+                            <input type="text" class="form-control" value="{{ user.municipality }}" readonly>
+                            <label>Municipio</label>
+                        </div>
+                        <div class="form-floating mb-3 mt-3 col-4">
+                            <input type="text" class="form-control" value="{{ user.status }}" readonly>
+                            <label>Estado</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-floating mb-3 mt-3 col-4">
+                            <input type="text" class="form-control" value="{{ user.fullPayment }}" readonly>
+                            <label>Pago Completo</label>
+                        </div>
+                        <div class="form-floating mb-3 mt-3 col-4">
+                            <a type="button" class="btn btn-secondary form-control">ESTADO DE CUENTA</a>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+                <!--Sección de servicios activos -->
+                <div class="card col-md-8 offset-2">
+                    <div class="card-header">{{ subscription_status }} y cuenta con los siguientes servicios activos.</div>
+                    <div class="card-body">
+                        <div class="row" id="containerNewServices">
+                            {% for service in user.subscriptions %}
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" value="{{ service.service }}" readonly>
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal">Facturas Adelantadas</button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <br>
+            </div>
+        </div>
+        <br>
+
+        <!--Listado de facturas asociadas-->
+        <div class="container-fluid mt-4">
+            <div class="row">
+                <div class="col">
+                    <table id="datatable_invoices_by_user" class="table table-striped table-bordered" data-page-length='50' style="width: 100%">
+                        <thead>
+                            <tr>
+                                <th>No. Factura</th>
+                                <th>Valor</th>
+                                <th>Año</th>
+                                <th>Mes</th>
+                                <th>Servicio</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                                <th>Concepto</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% set total_payment = 0 %}
+                            {% for invoice in user.invoices %}
+                                <tr>
+                                    <td>{{ invoice.id}}</td>
+                                    <td>${{ invoice.value|number_format(0, '.', '.') }}</td>
+                                    <td>{{ invoice.yearInvoiced}}</td>
+                                    <td>{{ invoice.monthInvoiced}}</td>
+                                    <td>{{ invoice.subscription.service}}</td>
+                                    <td>{{ invoice.description}}</td>
+                                    <td>{{ invoice.status}}</td>
+                                    <td>{{ invoice.concept}}</td>
+                                    <td>
+                                        <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                            <button type="button" class="btn btn-success">Pagar</button>
+                                            <button type="button" class="btn btn-warning">Editar</button>
+                                            <button type="button" class="btn btn-danger">Eliminar</button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                {% set total_payment = total_payment + invoice.value%}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <h5>Total Pagado: ${{ total_payment|number_format(0, '.', '.') }}</h5>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

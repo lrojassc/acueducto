@@ -33,7 +33,11 @@
                             <td>{{ payment.invoice.concept }}</td>
                             <td>{{ payment.invoice.user.name }}</td>
                             <td>{{ payment.invoice.subscription.service }}</td>
-                            <td>Imprimir</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                    <button type="button" class="btn btn-info">Imprimir</button>
+                                </div>
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>

@@ -53,6 +53,7 @@
 
 # Env
 .env
+db.sql
 ###> symfony/webpack-encore-bundle ###
 /node_modules/
 /public/build/
