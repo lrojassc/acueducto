@@ -15,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class CreateInvoiceType extends AbstractType
 {
@@ -23,7 +24,8 @@ class CreateInvoiceType extends AbstractType
         $builder
             ->add('value', IntegerType::class,  [
                 'label' => 'Valor de la Factura',
-                'required' => TRUE
+                'required' => TRUE,
+                'constraints' => new NotBlank()
             ])
             ->add('description', TextType::class, [
                 'label' => 'Descripción de la Factura',

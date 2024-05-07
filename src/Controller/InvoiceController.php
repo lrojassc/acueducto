@@ -13,8 +13,19 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class InvoiceController extends AbstractController
 {
+
+    /**
+     * @var EntityManagerInterface
+     */
+    protected EntityManagerInterface $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     #[Route('/create/invoice', name: 'create_invoice')]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
+    public function create(Request $request): Response
     {
         $form = $this->createForm(CreateInvoiceType::class);
         $form->handleRequest($request);
@@ -28,8 +39,8 @@ class InvoiceController extends AbstractController
             $invoice->setUser($invoice->getUser());
             $invoice->setSubscription($invoice->getSubscription());
 
-            $entityManager->persist($invoice);
-            $entityManager->flush();
+            $this->entityManager->persist($invoice);
+            $this->entityManager->flush();
             $this->addFlash('success', 'Factura creada exitosamente');
             return $this->redirectToRoute('create_invoice');
         }
@@ -39,10 +50,17 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/list/invoices', name: 'list_invoices')]
-    public function list(EntityManagerInterface $entityManager): Response
+    public function list(): Response
     {
         return $this->render('invoice/list.html.twig', [
-            'invoices' => $entityManager->getRepository(Invoice::class)->findAll()
+            'invoices' => $this->entityManager->getRepository(Invoice::class)->findAll()
+        ]);
+    }
+
+    #[Route('/invoice/{invoice}', name: 'invoice_show')]
+    public function show(Invoice $invoice): Response {
+        return $this->render('invoice/show.html.twig', [
+            'invoice' => $invoice,
         ]);
     }
 }

@@ -121,11 +121,17 @@
                                     <td>{{ invoice.status}}</td>
                                     <td>{{ invoice.concept}}</td>
                                     <td>
-                                        <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                            <button type="button" class="btn btn-success">Pagar</button>
-                                            <button type="button" class="btn btn-warning">Editar</button>
-                                            <button type="button" class="btn btn-danger">Eliminar</button>
-                                        </div>
+                                        {% if invoice.value == 0 and invoice.status == 'PAGADA' %}
+                                            <div class="btn-group" role="group" style="width: 65%">
+                                                <button type="button" class="btn btn-info">Imprimir Comprobante</button>
+                                            </div>
+                                        {% else %}
+                                            <div class="btn-group" role="group" style="width: 65%">
+                                                <a type="button" class="btn btn-success" href="{{ path('invoice_show', {invoice: invoice.id}) }}">Pagar</a>
+                                                <button type="button" class="btn btn-warning">Editar</button>
+                                                <button type="button" class="btn btn-danger">Eliminar</button>
+                                            </div>
+                                        {% endif %}
                                     </td>
                                 </tr>
 
