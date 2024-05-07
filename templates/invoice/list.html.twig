@@ -23,7 +23,7 @@
                     <tbody>
                     {% for invoice in invoices %}
                         <tr>
-                            <td>{{ invoice.id }}</td>
+                            <td id="value_invoice">{{ invoice.id }}</td>
                             <td>${{ invoice.value|number_format(0, '.', '.') }}</td>
                             <td>{{ invoice.yearInvoiced }}</td>
                             <td>{{ invoice.monthInvoiced }}</td>
@@ -40,7 +40,7 @@
                                     <div class="btn-group" role="group" style="width: 100%">
                                         <a type="button" class="btn btn-success" href="{{ path('invoice_show', {invoice: invoice.id}) }}">Pagar</a>
                                         <button type="button" class="btn btn-warning">Editar</button>
-                                        <button type="button" class="btn btn-danger">Eliminar</button>
+                                        <a type="button" class="btn btn-danger" id="delete-invoice">Eliminar</a>
                                     </div>
                                 {% endif %}
                             </td>
@@ -51,4 +51,36 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var invoices = document.querySelectorAll('#delete-invoice');
+            invoices.forEach(function (invoice) {
+
+                invoice.addEventListener('click', function (event) {
+                    event.preventDefault()
+                    let fila = this.parentNode.parentNode.parentNode;
+                    var id = fila.querySelector('td').textContent;
+
+                    let delete_invoice = window.confirm('Está seguro de eliminar la factura ' + id)
+                    if (delete_invoice === true) {
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', '{{ path('delete_invoice') }}', true);
+                        xhr.setRequestHeader('Content-Type', 'application/json');
+                        xhr.onload = function() {
+                            if (xhr.status === 200) {
+                                var data = JSON.parse(xhr.responseText);
+                                alert(data.message)
+                                location.reload();
+                            } else {
+                                alert('Hubo un error con la solicitud')
+                            }
+                        };
+                        xhr.send(JSON.stringify({ invoice: id }));
+                    } else {
+                        location.reload();
+                    }
+                })
+            })
+        })
+    </script>
 {% endblock %}

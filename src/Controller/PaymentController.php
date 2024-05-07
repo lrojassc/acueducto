@@ -83,6 +83,8 @@ class PaymentController extends AbstractController
                         $payment->setMethod('EFECTIVO');
                         $payment->setMonthInvoiced($invoice->getMonthInvoiced());
                         $payment->setInvoice($invoice);
+                        $payment->setCreatedAt(new \DateTime('now'));
+                        $payment->setUpdatedAt(new \DateTime('now'));
 
                         $invoice->addPayment($payment);
 

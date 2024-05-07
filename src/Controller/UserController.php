@@ -78,15 +78,17 @@ class UserController extends AbstractController
     }
 
     #[Route('/show/user/{user}', name: 'show_user')]
-    public function show(User $user): Response
+    public function show(User $user, EntityManagerInterface $entityManager): Response
     {
+        $active_invoices = $entityManager->getRepository(Invoice::class)->findInvoicesActivesByUser($user->getId());
         $subscription_status = $user->getPaidSubscription() === 'PAGADA'
             ? 'Esta suscripción se encuentra PAGADA completamente'
             : 'Esta suscripción aún NO SE HA PAGADO completamente';
 
         return $this->render('user/show.html.twig', [
             'user' => $user,
-            'subscription_status' => $subscription_status
+            'subscription_status' => $subscription_status,
+            'invoices' => $active_invoices
         ]);
     }
 }
