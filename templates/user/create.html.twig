@@ -16,6 +16,7 @@
             <h5 class="card-header">Creación de Usuario</h5>
             <div class="card-body">
                 {{ form_start(form_create_user) }}
+                <input type="hidden" name="token_create_user" value="{{ csrf_token('create-user') }}">
                 <div class="row">
                     <div class="form-floating mb-3 mt-3 col-4">
                         <input type="text" class="form-control" name="{{ field_name(form_create_user.name) }}" value="{{ field_value(form_create_user.name) }}" required>

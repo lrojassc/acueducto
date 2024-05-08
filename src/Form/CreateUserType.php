@@ -63,6 +63,13 @@ class CreateUserType extends AbstractType
                     'SUSPENDIDO' => 'SUSPENDIDO',
                 ]
             ])
+            ->add('full_payment', ChoiceType::class, [
+                'label' => '¿Paga Servicio Completo?',
+                'choices' => [
+                    'SI' => 'SI',
+                    'PAGA LA MITAD' => 'MITAD',
+                ]
+            ])
             ->add('save', SubmitType::class, [
                 'label' => 'Crear Usuario',
                 'attr' => ['class' => 'btn btn-outline-secondary']
@@ -72,10 +79,8 @@ class CreateUserType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-
         $resolver->setDefaults([
-            'data_class' => User::class,
-            'csrf_protection' => true,
+            'data_class' => User::class
         ]);
     }
 }

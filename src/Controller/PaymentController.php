@@ -5,30 +5,22 @@ namespace App\Controller;
 use App\Entity\Invoice;
 use App\Entity\Payment;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class PaymentController extends AbstractController
+class PaymentController extends MainController
 {
 
     /**
-     * @var EntityManagerInterface
+     * @param EntityManagerInterface $entityManager
+     * @param ValidatorInterface $validator
      */
-    protected EntityManagerInterface $entityManager;
-
-    /**
-     * @var ValidatorInterface
-     */
-    protected ValidatorInterface $validator;
-
     public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
     {
-        $this->entityManager = $entityManager;
-        $this->validator = $validator;
+        parent::__construct($entityManager, $validator);
     }
 
     #[Route('/list/payments', name: 'list_payments')]
@@ -120,30 +112,4 @@ class PaymentController extends AbstractController
         }
     }
 
-    /**
-     * Validar que se cumplan las condiciones para los campos
-     *
-     * @param array $fields
-     *
-     * @return array
-     */
-    public function validateDataForm(array $fields): array
-    {
-        $count = 0;
-        $errors = [];
-        foreach ($fields as $field) {
-            $errors[$count] = $this->validator->validate($field['field'], $field['constraint']);
-            $count ++;
-        }
-
-        $message_errors = [];
-        if (count($errors) > 0) {
-            foreach ($errors as $key => $error) {
-                foreach ($error as $item) {
-                    $message_errors[$key] = $item->getMessage();
-                }
-            }
-        }
-        return $message_errors;
-    }
 }
