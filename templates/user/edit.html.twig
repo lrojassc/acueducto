@@ -105,20 +105,26 @@
 <script>
     function deleteService(service) {
         event.preventDefault();
-
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', '{{ path('delete_subscription') }}', true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                var data = JSON.parse(xhr.responseText);
-                alert(data.message)
-                window.location.href = window.location.href;
-            } else {
-                alert('Hubo un error con la solicitud')
+        let delete_service = window.confirm('Está seguro de eliminar este servicio ')
+        if (delete_service === true) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '{{ path('delete_subscription') }}', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    alert(data.message)
+                    window.location.href = window.location.href;
+                } else {
+                    alert('Hubo un error con la solicitud')
+                }
             }
+            xhr.send(JSON.stringify({ id: service }));
+        } else {
+            window.location.href = window.location.href;
         }
-        xhr.send(JSON.stringify({ id: service }));
+
+
     }
 
     function addNewService() {
