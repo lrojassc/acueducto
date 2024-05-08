@@ -56,4 +56,16 @@ class MainController extends AbstractController
         }
         return $message_errors;
     }
+
+    public function getServicesByUser($request, $search): array
+    {
+        $services = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $services['service_'.$i] = $request->request->get($search.$i);
+            if ($services['service_'.$i] === NULL) {
+                unset($services['service_'.$i]);
+            }
+        }
+        return $services;
+    }
 }

@@ -103,17 +103,54 @@ class UserController extends MainController
     #[Route('/edit/user/{user}', name: 'edit_user')]
     public function edit(User $user, Request $request): Response
     {
-        $form = $this->createForm(CreateUserType::class, $user);
         $active_subscription = $this->entityManager->getRepository(Subscription::class)->findByActiveSubscription($user->getId());
-        $submittedToken = $request->getPayload()->get('token_edit_user');
-        if ($this->isCsrfTokenValid('edit-user', $submittedToken)) {
-            $form->handleRequest($request);
-            $user->setPaidSubscription('DEBE');
+        $form = $this->createForm(CreateUserType::class, $user);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $form->getData();
+            $user->setUpdatedAt(new \DateTime('now'));
+            $this->entityManager->persist($user);
+
+            $update_services = $this->getServicesByUser($request, 'editActiveServices');
+            $new_services = $this->getServicesByUser($request, 'nuevoServicio');
+            $subscription_by_user = $this->entityManager->getRepository(Subscription::class)->findByActiveSubscription($user->getId());
+
+            $count = 0;
+            // Actualizar servicios activos
+            foreach ($update_services as $update_service) {
+                if (!empty($update_service)) {
+                    $subscription_by_user[$count]->setService($update_service);
+                    $subscription_by_user[$count]->setUpdatedAt(new \DateTime('now'));
+                    $this->entityManager->persist($subscription_by_user[$count]);
+                }
+                $count++;
+            }
+
+            // Crear nuevos servicios
+            foreach ($new_services as $new_service) {
+                if (!empty($new_service)) {
+                    $new_subscription = new Subscription();
+                    $new_subscription->setUser($user);
+                    $new_subscription->setService($new_service);
+                    $new_subscription->setStatus('ACTIVO');
+                    $new_subscription->setCreatedAt(new \DateTime('now'));
+                    $new_subscription->setUpdatedAt(new \DateTime('now'));
+
+                    $this->entityManager->persist($new_subscription);
+                }
+            }
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Usuario actualizado correctamente');
+            return $this->redirectToRoute('show_user', ['user' => $user->getId()]);
         }
+
         return $this->render('user/edit.html.twig', [
             'form_edit_user' => $form->createView(),
             'user' => $user,
             'subscriptions' => $active_subscription
         ]);
     }
+
+
 }

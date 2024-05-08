@@ -17,19 +17,19 @@
             <div class="card">
                 <div class="card-header">Editar Usuario</div>
                 <div class="card-body">
-                    <form action="#" method="POST">
-                        <input type="hidden" name="token_edit_user" value="{{ csrf_token('update-user') }}">
+                    {{ form_start(form_edit_user) }}
+
                         <div class="row">
                             <div class="form-floating mb-3 mt-3 col-4">
                                 <input type="text" class="form-control" name="{{ field_name(form_edit_user.name) }}" value="{{ field_value(form_edit_user.name) }}">
                                 <label>{{ field_label(form_edit_user.name) }}</label>
                             </div>
                             <div class="form-floating mb-3 mt-3 col-4">
-                                <input type="text" class="form-control" value="{{ field_value(form_edit_user.document_type) }}" disabled>
+                                <input type="text" class="form-control" name="{{ field_name(form_edit_user.document_type) }}" value="{{ field_value(form_edit_user.document_type) }}" readonly>
                                 <label>{{ field_label(form_edit_user.document_type) }}</label>
                             </div>
                             <div class="form-floating mb-3 mt-3 col-4">
-                                <input type="number" class="form-control" value="{{ field_value(form_edit_user.document_number) }}" disabled>
+                                <input type="number" class="form-control" name="{{ field_name(form_edit_user.document_number) }}" value="{{ field_value(form_edit_user.document_number) }}" readonly>
                                 <label>{{ field_label(form_edit_user.document_number) }}</label>
                             </div>
                         </div>
@@ -53,7 +53,7 @@
                                 <label>{{ field_label(form_edit_user.city) }}</label>
                             </div>
                             <div class="form-floating mb-3 mt-3 col-4">
-                                <input type="number" class="form-control" name="{{ field_name(form_edit_user.municipality) }}" value="{{ field_value(form_edit_user.municipality) }}" disabled>
+                                <input type="text" class="form-control" name="{{ field_name(form_edit_user.municipality) }}" value="{{ field_value(form_edit_user.municipality) }}">
                                 <label>{{ field_label(form_edit_user.municipality) }}</label>
                             </div>
                             <div class="form-floating mb-3 mt-3 col-4">
@@ -90,12 +90,12 @@
                                         </div>
                                     {% endfor %}
                                 </div>
-                                <button type="button" class="btn btn-outline-secondary">Agregar Nuevo Servicio</button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="addNewService()">Agregar Nuevo Servicio</button>
                             </div>
                         </div>
                         <hr>
-                        <button id="btn-update-user" type="submit" class="btn btn-outline-secondary">Modificar</button>
-                    </form>
+                        {{ form_row(form_edit_user.save) }}
+                    {{ form_end(form_edit_user) }}
                 </div>
             </div>
         </div>
@@ -119,6 +119,40 @@
             }
         }
         xhr.send(JSON.stringify({ id: service }));
+    }
+
+    function addNewService() {
+        // Crear nuevo elemento input y label
+        var nuevoDiv = document.createElement("div");
+        var nuevoInput = document.createElement("input");
+        var nuevoLabel = document.createElement("label");
+
+        var containerServices = document.getElementById("containerNewServices");
+        var inputElements = containerServices.querySelectorAll("input");
+        var countInputs = inputElements.length;
+        var counter = countInputs + 1;
+
+        if (counter > 5) {
+            alert('No es posible agregar mas servicios')
+        } else {
+            nuevoInput.type = "text";
+            nuevoInput.classList = "form-control mb-3";
+            nuevoInput.name = "nuevoServicio" + counter;
+
+            nuevoDiv.classList = "form-floating";
+
+            nuevoLabel.textContent = "Descripción del Nuevo Servicio " + counter;
+
+            nuevoDiv.appendChild(nuevoInput);
+            nuevoDiv.appendChild(nuevoLabel);
+
+            // Obtener el contenedor donde se agregarán los inputs
+            var contenedorInputs = document.getElementById("containerNewServices");
+
+            // Agregar el nuevo input al contenedor
+            contenedorInputs.appendChild(nuevoDiv);
+        }
+
     }
 </script>
 
