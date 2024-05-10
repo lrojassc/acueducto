@@ -54,7 +54,7 @@
                                 {% else %}
                                     <div class="btn-group" role="group" style="width: 100%">
                                         <a type="button" class="btn btn-success" href="{{ path('invoice_show', {invoice: invoice.id}) }}">Pagar</a>
-                                        <button type="button" class="btn btn-warning">Editar</button>
+                                        <a type="button" class="btn btn-warning" href="{{ path('edit_invoice', {invoice: invoice.id}) }}">Editar</a>
                                         <a type="button" class="btn btn-danger" id="delete-invoice">Eliminar</a>
                                     </div>
                                 {% endif %}

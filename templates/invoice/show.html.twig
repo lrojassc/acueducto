@@ -13,9 +13,9 @@
             {% endfor %}
 
             <div class="card">
-                <div class="card-header">Ver / Pagar Factura</div>
+                <div class="card-header">{% if edit %} Actualizar Factura {% else %} Ver / Pagar Factura {% endif %}</div>
                 <div class="card-body">
-                    <form action="{{ url('add_payment', { invoice: invoice.id }) }}" method="POST">
+                    <form action="{% if edit %}{{ path('update_invoice', { invoice: invoice.id }) }}{% else %}{{ path('add_payment', { invoice: invoice.id }) }}{% endif %}" method="POST">
                         <input type="hidden" name="token_payment" value="{{ csrf_token('payment-invoice') }}">
                         <div class="form-floating mb-3 mt-3 col">
                             <input type="text" class="form-control" id="invoiceNumber" name="invoiceNumber" value="{{ invoice.id }}" disabled>
@@ -26,7 +26,7 @@
                             <label for="invoiceNameUser">Titular de la Factura</label>
                         </div>
                         <div class="form-floating mb-3 mt-3 col">
-                            <input type="text" class="form-control" id="valueInvoice" name="valueInvoice" value="${{ invoice.value|number_format(0, '.', '.') }}" disabled>
+                            <input type="text" class="form-control" id="valueInvoice" name="valueInvoice" value="${{ invoice.value|number_format(0, '.', '.') }}" {% if edit != true %} disabled {% endif %}>
                             <label for="valueInvoice">Valor Factura</label>
                         </div>
                         <div class="form-floating mb-3 mt-3 col">
@@ -45,21 +45,25 @@
                             <input type="text" class="form-control" id="serviceUser" name="serviceUser" value="{{ invoice.subscription.service }}" disabled>
                             <label for="serviceUser">Servicio</label>
                         </div>
-                        {% if invoice.status == 'PAGADA' %}
-                            <div class="form-floating mb-3 mt-3 col">
-                                <input type="text" class="form-control" id="paymentStatus" name="paymentStatus" value="{{ invoice.status }}" disabled>
-                                <label for="paymentStatus">Estado</label>
-                            </div>
+                        {% if edit %}
+                            <button id="btn-guardar_pago" type="submit" class="btn btn-outline-secondary">Actualizar</button>
                         {% else %}
-                            <div class="form-floating mb-3 mt-3 col">
-                                <input type="text" class="form-control" id="paymentValue" name="paymentValue" value="">
-                                <label for="paymentValue">Valor a Pagar</label>
-                            </div>
-                            <div class="form-floating mb-3 mt-3 col">
-                                <input type="text" class="form-control" id="paymentDescription" name="paymentDescription" value="" >
-                                <label for="paymentDescription">Descripción del Pago</label>
-                            </div>
-                            <button id="btn-guardar_pago" type="submit" class="btn btn-outline-secondary">Pagar</button>
+                            {% if invoice.status == 'PAGADA' %}
+                                <div class="form-floating mb-3 mt-3 col">
+                                    <input type="text" class="form-control" id="paymentStatus" name="paymentStatus" value="{{ invoice.status }}" disabled>
+                                    <label for="paymentStatus">Estado</label>
+                                </div>
+                            {% else %}
+                                <div class="form-floating mb-3 mt-3 col">
+                                    <input type="text" class="form-control" id="paymentValue" name="paymentValue" value="">
+                                    <label for="paymentValue">Valor a Pagar</label>
+                                </div>
+                                <div class="form-floating mb-3 mt-3 col">
+                                    <input type="text" class="form-control" id="paymentDescription" name="paymentDescription" value="" >
+                                    <label for="paymentDescription">Descripción del Pago</label>
+                                </div>
+                                <button id="btn-guardar_pago" type="submit" class="btn btn-outline-secondary">Pagar</button>
+                            {% endif %}
                         {% endif %}
                     </form>
                 </div>

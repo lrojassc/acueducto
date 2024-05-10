@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Form\CreateInvoiceType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -61,6 +62,7 @@ class InvoiceController extends MainController
     #[Route('/invoice/{invoice}', name: 'invoice_show')]
     public function show(Invoice $invoice): Response {
         return $this->render('invoice/show.html.twig', [
+            'edit' => FALSE,
             'invoice' => $invoice,
         ]);
     }
@@ -79,6 +81,26 @@ class InvoiceController extends MainController
         ];
 
         return new JsonResponse($response);
+    }
+
+    #[Route('/invoice/edit/{invoice}', name: 'edit_invoice')]
+    public function edit(Invoice $invoice, Request $request)
+    {
+        return $this->render('invoice/show.html.twig', [
+            'edit' => TRUE,
+            'invoice' => $invoice,
+        ]);
+    }
+
+    #[Route('/invoice/update/{invoice}', name: 'update_invoice')]
+    public function update(Invoice $invoice, Request $request): RedirectResponse
+    {
+        $value_invoice = str_replace(["$", "."], '', $request->request->get('valueInvoice'));
+        $invoice->setValue($value_invoice);
+        $this->entityManager->persist($invoice);
+        $this->entityManager->flush();
+        $this->addFlash('success', 'Factura actualiza con exito');
+        return $this->redirectToRoute('list_invoices');
     }
 
     #[Route('/invoice/massive/invoices', name: 'massive_invoices')]
