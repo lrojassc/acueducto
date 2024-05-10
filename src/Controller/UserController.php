@@ -34,7 +34,6 @@ class UserController extends MainController
             if ($form->isSubmitted() && $form->isValid()) {
                 $user = $form->getData();
                 $user->setPaidSubscription('DEBE');
-                $user->setFullPayment('SI');
                 $user->setPassword($user->getDocumentNumber());
                 $user->setCreatedAt(new \DateTime('now'));
                 $user->setUpdatedAt(new \DateTime('now'));
@@ -69,7 +68,7 @@ class UserController extends MainController
                 $this->entityManager->flush();
 
                 $this->addFlash('success', 'Usuario creado correctamente');
-                return $this->redirectToRoute('create_user');
+                return $this->redirectToRoute('list_users');
             }
         }
         return $this->render('user/create.html.twig', [

@@ -21,20 +21,20 @@ class MassiveInvoiceRepository extends ServiceEntityRepository
         parent::__construct($registry, MassiveInvoice::class);
     }
 
-    //    /**
-    //     * @return MassiveInvoice[] Returns an array of MassiveInvoice objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('m')
-    //            ->andWhere('m.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('m.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findOneByRegister()
+    {
+        $massive_invoices = $this->createQueryBuilder('m')
+            ->orderBy('m.id', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
+
+        if (empty($massive_invoices)) {
+            return null;
+        } else {
+            return $massive_invoices[0];
+        }
+    }
 
     //    public function findOneBySomeField($value): ?MassiveInvoice
     //    {

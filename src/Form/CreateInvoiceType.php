@@ -64,7 +64,7 @@ class CreateInvoiceType extends AbstractType
             ])
             ->add('subscription', EntityType::class, [
                 'class' => Subscription::class,
-                'choice_label' => 'service',
+                'choice_label' => 'id',
             ])
 
             ->add('save', SubmitType::class, [
