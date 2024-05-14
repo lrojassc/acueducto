@@ -1,0 +1,176 @@
+<style>
+        * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+                height: 100vh;
+                width: 100%;
+                background-color: #c0c0c003;
+        }
+
+        .massive_invoice {
+                margin: 0;
+        }
+
+        .container-invoices {
+                width: 100%;
+                height: 97%;
+        }
+
+        .row-invoice {
+                width: 100%;
+        }
+
+        .invoice {
+                margin-left: 2px;
+                padding: 15px;
+                width: 45.8%;
+                height: 639px;
+                float: left;
+                border-color: black;
+                border-width: 0.5px;
+                border-style: solid
+        }
+
+        .info_invoice {
+                border-color: black;
+                border-width: 0.5px;
+                border-style: solid;
+                height: 63%
+        }
+
+        .separate_invoice{
+                background-color: black;
+                height: 1px;
+                margin-bottom: 7px;
+                margin-top: 7px;
+        }
+
+        .info_payment_invoice {
+                border-color: black;
+                border-width: 0.5px;
+                border-style: solid;
+                height: 23%
+        }
+
+        .clearfix-dos {
+                clear: both;
+        }
+
+        .table-invoice-massive {
+                width: 100%;
+                border-spacing: 0;
+                border-collapse: collapse;
+        }
+
+        .title-bold {
+                font-weight: bold;
+        }
+
+        .pdf-massive-td {
+                border-color: black;
+                border-width: 1px;
+                border-style: solid;
+        }
+
+</style>
+
+<body class="massive_invoice">
+        <div class="container-invoices" >
+                {% for invoices in invoices_print %}
+                <div class="row-invoice">
+                        {% for invoice in invoices %}
+                        <div class="invoice">
+
+                                <p style="font-weight: bold; text-align: center; margin-bottom: 2px!important;">JUNTA ADMINISTRADORA DE ACUEDUCTO DEL CENTRO POBLADO QUITURO - TARQUI</p>
+                                <p style="text-decoration: underline; text-align: center; margin-bottom: 5px!important;">NIT: 900.260.525-4</p>
+
+                                <div class="info_invoice">
+                                        <table class="table-invoice-massive">
+                                                <tr>
+                                                        <td class="title-bold pdf-massive-td" style="width: 40%; font-size: 15px!important; padding: 2.5px!important;">Subscriptor</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 2.5px!important;">{{invoice.user}}</td>
+                                                </tr>
+                                                <tr>
+                                                        <td class="title-bold pdf-massive-td" style="width: 40%; font-size: 15px!important; padding: 2.5px!important;">Dirección / Barrio</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 2.5px!important;">{{invoice.address}}</td>
+                                                </tr>
+                                                <tr>
+                                                        <td class="title-bold pdf-massive-td" style="width: 40%; font-size: 15px!important; padding: 2.5px!important;">Código / Servicio</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 2.5px!important;">No. {{invoice.user_code}} - {{invoice.service}}</td>
+                                                </tr>
+                                                <tr>
+                                                        <td class="title-bold pdf-massive-td" style="width: 40%; font-size: 15px!important; padding: 2.5px!important;">Factura / Valor</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 2.5px!important;">No. {{invoice.id_last_invoice}} - ${{invoice.value_last_invoice|number_format(0, '.', '.')}}</td>
+                                                </tr>
+                                                {% if invoice.subscription_debt %}
+                                                        <tr>
+                                                                <td class="title-bold pdf-massive-td" style="width: 40%; font-size: 15px!important; padding: 2.5px!important;">Debe suscripcion</td>
+                                                                <td class="pdf-massive-td" style="font-size: 15px!important; padding: 2.5px!important;">{{invoice.description_subscription}}</td>
+                                                        </tr>
+                                                {% endif %}
+                                                <tr>
+                                                        <td class="title-bold pdf-massive-td" style="width: 40%; font-size: 15px!important; padding: 2.5px!important;">Periodo facturado</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 2.5px!important;">{{invoice.period}}</td>
+                                                </tr>
+                                        </table>
+                                        <br>
+                                        <table class="table-invoice-massive">
+                                                <tr>
+                                                        <td class="title-bold pdf-massive-td" style="width: 40%; font-size: 15px!important; padding: 2.5px!important;">Atrasos</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 2.5px!important;">{{invoice.arrears}}</td>
+                                                </tr>
+                                                <tr>
+                                                        <td class="title-bold pdf-massive-td" style="width: 40%; font-size: 15px!important; padding: 2.5px!important;">Descripción</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 2.5px!important;">{{invoice.observation}}</td>
+                                                </tr>
+                                                <tr>
+                                                        <td class="title-bold pdf-massive-td" style="width: 40%; font-size: 15px!important; padding: 2.5px!important;">Facturas pendientes</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 2.5px!important;">{{invoice.invoice_pending}}</td>
+                                                </tr>
+                                                <tr>
+                                                        <td class="title-bold pdf-massive-td" style="width: 40%; font-size: 15px!important; padding: 2.5px!important;">Fecha limite pago</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 2.5px!important;">{{invoice.payment_deadline}}</td>
+                                                </tr>
+                                                <tr>
+                                                        <td class="title-bold pdf-massive-td" style="width: 40%; font-size: 15px!important; padding: 2.5px!important;">TOTAL A PAGAR</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 2.5px!important;">${{invoice.total_amount_invoices|number_format(0, '.', '.')}}</td>
+                                                </tr>
+                                        </table>
+                                </div>
+                                <div class="separate_invoice"></div>
+                                <div class="info_payment_invoice">
+                                        <p style="font-weight: bold; text-align: center; font-size: 13px!important; margin-bottom: 1px!important;">JUNTA ADMINISTRADORA DE ACUEDUCTO DEL CENTRO POBLADO QUITURO - TARQUI</p>
+                                        <p style="text-decoration: underline; text-align: center; font-size: 13px!important; margin-bottom: 8px!important;">NIT: 900.260.525-4</p>
+                                        <table class="table-invoice-massive">
+                                                <tr>
+                                                        <td class="title-bold pdf-massive-td" style="width: 20%; font-size: 15px!important; padding: 4px!important;">Factura</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 4px!important;">No. {{invoice.id_last_invoice}}</td>
+                                                        <td class="title-bold pdf-massive-td" style="width: 20%; font-size: 15px!important; padding: 4px!important;">Código</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 4px!important;">No. {{invoice.user_code}}</td>
+                                                </tr>
+                                                <tr>
+                                                        <td class="title-bold pdf-massive-td" style="width: 20%; font-size: 15px!important; padding: 4px!important;">Valor</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 4px!important;"></td>
+                                                        <td class="title-bold pdf-massive-td" style="width: 20%; font-size: 15px!important; padding: 4px!important;">Fecha</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 4px!important;"></td>
+                                                </tr>
+                                                <tr>
+                                                        <td class="title-bold pdf-massive-td" style="width: 20%; height: 28px; font-size: 15px!important; padding: 4px!important;">Recibido</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 4px!important;"></td>
+                                                        <td class="title-bold pdf-massive-td" style="width: 20%; height: 28px; font-size: 15px!important; padding: 4px!important;"></td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 4px!important;"></td>
+                                                </tr>
+                                        </table>
+                                </div>
+                        </div>
+                        {% endfor %}
+                </div>
+                <div class="clearfix-dos"></div>
+                {% endfor %}
+        </div>
+</body>

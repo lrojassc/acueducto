@@ -29,7 +29,17 @@ class SubscriptionRepository extends ServiceEntityRepository
             ->andWhere('s.status != :status')
             ->setParameter('status', 'INACTIVO')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
+    }
+
+    public function findServicesActiveByUser($user): array
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere('s.status = :status')
+            ->setParameter('status', 'ACTIVO')
+            ->getQuery()
+            ->getResult();
     }
 }
