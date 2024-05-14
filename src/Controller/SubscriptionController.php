@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Subscription;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,6 +37,22 @@ class SubscriptionController extends MainController
         ];
 
         return new JsonResponse($response);
+    }
 
+    #[Route('/subscriptions/{user}/service', methods: 'GET')]
+    public function getUserServices(User $user): JsonResponse {
+        $services_by_user = $this->entityManager->getRepository(Subscription::class)->findServicesActiveByUser($user->getId());
+        $services = [];
+        foreach ($services_by_user as $service) {
+            $services[] = [
+                'service' => $service->getService(),
+                'id' => $service->getId(),
+            ];
+        }
+        $response = [
+            'status' => 200,
+            'services' => $services,
+        ];
+        return new JsonResponse($response);
     }
 }

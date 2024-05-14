@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Invoice;
 use App\Entity\MassiveInvoice;
+use App\Entity\Subscription;
 use App\Entity\User;
 use App\Form\CreateInvoiceType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,6 +33,7 @@ class InvoiceController extends MainController
         $form = $this->createForm(CreateInvoiceType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $id_subscription = $request->request->get('serviceUser');
             $invoice = $form->getData();
             $invoice->setYearInvoiced(date('Y'));
             $invoice->setStatus('PENDIENTE');
@@ -39,7 +41,7 @@ class InvoiceController extends MainController
             $invoice->setUpdatedAt(new \DateTime('now'));
 
             $invoice->setUser($invoice->getUser());
-            $invoice->setSubscription($invoice->getSubscription());
+            $invoice->setSubscription($this->entityManager->getRepository(Subscription::class)->find($id_subscription));
 
             $this->entityManager->persist($invoice);
             $this->entityManager->flush();

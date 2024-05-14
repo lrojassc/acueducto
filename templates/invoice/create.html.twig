@@ -4,7 +4,7 @@
 
 {% block body %}
 <div class="container">
-    <div class="justify-content-center">
+    <div class="justify-content-center col-md-6 offset-3">
         <br>
         {% for flashMessage in app.flashes('success') %}
             <div class="alert alert-primary" style="background-color: #add9f9!important;" role="alert">
@@ -16,9 +16,92 @@
             <h5 class="card-header">Creación de Factura</h5>
             <div class="card-body">
                 {{ form_start(form_create_invoice) }}
+                    <div class="form-floating mb-3 mt-3 col">
+                        <select class="form-select" id="userInvoice" name="{{ field_name(form_create_invoice.user) }}">
+                            <option value="seleccione">--Seleccione Suscriptor--</option>
+                            {% for label, value in field_choices(form_create_invoice.user) %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <label>{{ field_label(form_create_invoice.user) }}</label>
+                    </div>
+                    <div id="serviceOptions" class="form-floating mb-3 mt-3 col" style="display: none">
+                        <!-- Aquí se mostrarán las opciones dependiendo del producto seleccionado -->
+                    </div>
+                    <div class="form-floating mb-3 mt-3 col">
+                        <input type="number" class="form-control" id="valueInvoice" name="{{ field_name(form_create_invoice.value) }}" value="{{ field_value(form_create_invoice.value) }}" required style="display: none">
+                        <label>{{ field_label(form_create_invoice.value) }}</label>
+                    </div>
+                    <div class="form-floating mb-3 mt-3 col">
+                        <input type="text" class="form-control" name="{{ field_name(form_create_invoice.description) }}" value="{{ field_value(form_create_invoice.description) }}" required>
+                        <label>{{ field_label(form_create_invoice.description) }}</label>
+                    </div>
+                    <div class="form-floating mb-3 mt-3 col">
+                        <select class="form-select" name="{{ field_name(form_create_invoice.month_invoiced) }}">
+                            {% for label, value in field_choices(form_create_invoice.month_invoiced) %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <label>{{ field_label(form_create_invoice.month_invoiced) }}</label>
+                    </div>
+                    <div class="form-floating mb-3 mt-3 col">
+                        <select class="form-select" name="{{ field_name(form_create_invoice.concept) }}">
+                            {% for label, value in field_choices(form_create_invoice.concept) %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <label>{{ field_label(form_create_invoice.concept) }}</label>
+                    </div>
+
                 {{ form_end(form_create_invoice) }}
             </div>
         </div>
     </div>
 </div>
+<script>
+    document.getElementById('userInvoice').addEventListener('change', function () {
+        var userId = this.value;
+        if (userId !== '') {
+            fetch('/subscriptions/' + userId + '/service')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.services.length === 0) {
+                        alert('El suscriptor no tiene servicios asociados, debe agregar al menos un servicio')
+                    } else {
+                        // Inicializar el contenedor principal en limpio para el select
+                        var inputValue = document.getElementById('valueInvoice')
+                        var opcionesDiv = document.getElementById('serviceOptions');
+                        opcionesDiv.innerHTML = '';
+
+                        // Crear los elementos html necesarios para mostrar las opciones
+                        var select = document.createElement("select");
+                        var label = document.createElement("label");
+
+                        // Agregar propiedades necesarias para los elementos html creados
+                        select.classList = "form-select";
+                        select.id = "serviceUser";
+                        select.name = "serviceUser";
+                        label.textContent = "Servicios";
+
+                        // Incorporar los elementos creados al contenedor principal
+                        opcionesDiv.appendChild(select);
+                        opcionesDiv.appendChild(label);
+                        opcionesDiv.style.display = 'block';
+                        inputValue.style.display = 'block';
+
+                        // Inicializar el contenedor de las opciones disponibles
+                        var opcionesSelect = document.getElementById('serviceUser');
+                        opcionesSelect.innerHTML = '';
+
+                        // Agregar las opciones disponibles con innerHtml
+                        data.services.forEach(function (service) {
+                            opcionesSelect.innerHTML += '<option value=' + service.id +'>'+ service.service +'</option>';
+                        });
+                    }
+                })
+        } else {
+            document.getElementById('serviceOptions').style.display = 'none';
+        }
+    })
+</script>
 {% endblock %}

@@ -52,9 +52,9 @@ class CreateInvoiceType extends AbstractType
                 'label' => 'Concepto',
                 'required' => true,
                 'choices' => [
-                    'SUSCRIPCION' => 'SUSCRIPCION',
                     'MENSUALIDAD' => 'MENSUALIDAD',
                     'RECONECCION' => 'RECONECCION',
+                    'SUSCRIPCION' => 'SUSCRIPCION',
                 ]
             ])
             ->add('user', EntityType::class, [
@@ -62,10 +62,12 @@ class CreateInvoiceType extends AbstractType
                 'choice_label' => 'name',
                 'label' => 'Seleccione un Usuario Suscriptor',
             ])
+            /*
             ->add('subscription', EntityType::class, [
                 'class' => Subscription::class,
                 'choice_label' => 'id',
             ])
+            */
 
             ->add('save', SubmitType::class, [
                 'label' => 'Crear Factura',
