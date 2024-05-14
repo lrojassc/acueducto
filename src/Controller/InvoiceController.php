@@ -108,7 +108,7 @@ class InvoiceController extends MainController
     #[Route('/invoice/massive/invoices', name: 'massive_invoices')]
     public function massive()
     {
-        $current_month = 'MARZO';
+        $current_month = 'ABRIL';
         $message_type = 'error';
         $message = 'No se pueden volver a generar el masivo de facturas del mes de ' . $current_month;
 
