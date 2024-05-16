@@ -2,24 +2,29 @@
 
 namespace App\Controller;
 
+use AllowDynamicProperties;
 use App\Entity\Invoice;
 use App\Entity\Payment;
+use App\Form\ReportPaymentType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class PaymentController extends MainController
+#[AllowDynamicProperties] class PaymentController extends MainController
 {
 
     /**
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
+     * @param GeneratePDFController $generatePdfController
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, GeneratePDFController $generatePdfController)
     {
+        $this->generatePdfController = $generatePdfController;
         parent::__construct($entityManager, $validator);
     }
 
@@ -110,6 +115,58 @@ class PaymentController extends MainController
                 return $this->redirectToRoute('invoice_show', ['invoice' => $invoice->getId()]);
             }
         }
+    }
+
+    #[Route('/payment/generate/report', name: 'report')]
+    public function report(Request $request): Response
+    {
+        $form = $this->createForm(ReportPaymentType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $name_clicked_button = $form->getClickedButton()->getConfig()->getName();
+            $report = $form->getData();
+
+            $value = $report['value'];
+            $month_invoiced = $report['month_invoiced'];
+            $user = $report['user'];
+            $concept = $report['concept'];
+            $created_at = $report['created_at'];
+
+            $fields = [
+                'value' => $value,
+                'month_invoiced' => $month_invoiced,
+                'user' => $user,
+                'concept' => $concept,
+                'created_at' => $created_at
+            ];
+            if ($value === NULL && empty($month_invoiced) && $user === NULL && empty($concept) && $created_at === NULL) {
+                $this->addFlash('error', 'Debe seleccionar por lo menos un campo para generar el reporte');
+                return $this->redirectToRoute('report');
+            } else {
+                // Generar reporte en PDF
+                if ($name_clicked_button === 'send_pdf') {
+                    $payments = $this->entityManager->getRepository(Payment::class)->findPaymentsByFields($fields);
+                    if (!empty($payments)) {
+                        return $this->generatePdfController->generatePaymentReport($payments);
+                    } else {
+                        $this->addFlash('error', 'No hay reporte PDF para esta consulta.');
+                        return $this->redirectToRoute('report');
+                    }
+                // Generar reporte en excel
+                } else {
+                    $payments = $this->entityManager->getRepository(Payment::class)->findPaymentsByFields($fields);
+                    if (!empty($payments)) {
+                        return $this->generatePdfController->generatePaymentReport($payments);
+                    } else {
+                        $this->addFlash('error', 'No hay reporte Excel para esta consulta.');
+                        return $this->redirectToRoute('report');
+                    }
+                }
+            }
+        }
+        return $this->render('payment/report.html.twig', [
+            'form_report' => $form->createView()
+        ]);
     }
 
 }

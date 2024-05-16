@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Crear Reporte{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="justify-content-center col-md-6 offset-3">
+        <br>
+        {% for flashMessage in app.flashes('error') %}
+            <div class="alert alert-danger" role="alert">
+                {{ flashMessage }}
+            </div>
+        {% endfor %}
+        {% for flashMessage in app.flashes('success') %}
+            <div class="alert alert-primary" style="background-color: #add9f9!important;" role="alert">
+                {{ flashMessage }}
+            </div>
+        {% endfor %}
+
+        <div class="card">
+            <div class="card-header">Generar Reporte PDF</div>
+            <div class="card-body">
+                {{ form(form_report) }}
+            </div>
+        </div>
+        <br>
+    </div>
+</div>
+{% endblock %}

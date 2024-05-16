@@ -1,0 +1,102 @@
+<style>
+        * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+                height: 100vh;
+                width: 90%;
+                margin: 5%;
+        }
+
+        .container-payments {
+                width: 100%;
+        }
+
+        .title-payment {
+                padding: 10px;
+                text-align: center
+        }
+
+        .payment-data {
+                width: 100%;
+                height: auto;
+                border-color: black;
+                border-width: 1px;
+                border-style: solid;
+                border-spacing: 0;
+                border-collapse: collapse;
+        }
+
+        th, td {
+                padding: 4px;
+                border-bottom: 1px solid #999;
+        }
+
+        .tr-style {
+                background-color: #b0b2b3;
+                border-color: black;
+                border-width: 1px;
+                border-style: solid
+        }
+
+        .th-style {
+                border-color: black;
+                border-width: 1px;
+                border-style: solid;
+                text-align: left
+        }
+
+</style>
+
+<body>
+        <div class="container-payments">
+                <div class="title-payment">
+                        <h1 style="">Reporte General de Pagos</h1>
+                </div>
+                <div class="payments">
+                        <table class="payment-data">
+                                <thead class="head-table">
+                                <tr class="tr-style">
+                                        <th class="th-style" scope="col">No.</th>
+                                        <th class="th-style" scope="col">Usuario</th>
+                                        <th class="th-style" scope="col">Servicio</th>
+                                        <th class="th-style" scope="col">Factura</th>
+                                        <th class="th-style" scope="col">Mes Pagado</th>
+                                        <th class="th-style" scope="col">Valor</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% set total_payment = 0 %}
+                                {% for payment in payments %}
+                                        <tr>
+                                                <td>{{ payment.id }}</td>
+                                                <td>{{ payment.invoice.user.name }}</td>
+                                                <td>{{ payment.invoice.subscription.service }}</td>
+                                                <td>{{ payment.invoice.id }}</td>
+                                                <td>{{ payment.monthInvoiced }}</td>
+                                                <td>${{ payment.value|number_format(0, '.', '.') }}</td>
+                                        </tr>
+                                        {% set total_payment = total_payment + payment.value %}
+                                {% endfor %}
+                                </tbody>
+                        </table>
+                        <hr style="margin-top: 40px; margin-bottom: 10px">
+                        <table style="border-spacing: 0; border-collapse: collapse;">
+                                <caption>Consolidado de Pagos Realizados</caption>
+                                <br>
+                                <tr>
+                                        <td style="font-weight: bold; font-size: 20px">Cantidad de pagos realizados: </td>
+                                        <td style="font-size: 20px">{{ payments|length }}</td>
+                                </tr>
+                                <tr>
+                                        <td style="font-weight: bold; font-size: 20px">Total Pagos: </td>
+                                        <td style="font-size: 20px">${{ total_payment|number_format(0, '.', '.') }}</td>
+                                </tr>
+                        </table>
+                </div>
+        </div>
+</body>

@@ -4,13 +4,24 @@ namespace App\Controller;
 
 use App\Entity\Subscription;
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class GeneratePDFController extends MainController
 {
+
+    /**
+     * @param EntityManagerInterface $entityManager
+     * @param ValidatorInterface $validator
+     */
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    {
+        parent::__construct($entityManager, $validator);
+    }
 
     #[Route('/pdf/create/massive-invoices', name: 'create_massive_invoices')]
     public function generateMassiveInvoices(): Response
@@ -75,11 +86,30 @@ class GeneratePDFController extends MainController
         }
         $html = $this->renderView('pdf/massive_invoice.html.twig', ['invoices_print' => array_chunk($invoices_print, 2)]);
 
-
         $dompdf->loadHtml($html);
         $dompdf->setPaper('legal');
         $dompdf->render();
 
+        return new Response($dompdf->output(), 200, ['Content-Type' => 'application/pdf']);
+    }
+
+    /**
+     * Generar reporte de pagos por filtro aplicado desde formulario
+     *
+     * @param array $payments
+     *
+     * @return Response
+     */
+    public function generatePaymentReport(array $payments): Response
+    {
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $dompdf = new Dompdf($options);
+        $html = $this->renderView('pdf/filter_payments_report.html.twig', ['payments' => $payments]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('letter');
+        $dompdf->render();
         return new Response($dompdf->output(), 200, ['Content-Type' => 'application/pdf']);
     }
 }

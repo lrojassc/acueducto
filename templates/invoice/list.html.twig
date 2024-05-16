@@ -36,6 +36,7 @@
                             <th>Concepto</th>
                             <th>Usuario</th>
                             <th>Servicio</th>
+                            <th>Dirección</th>
                             <th>Acción</th>
                         </tr>
                     </thead>
@@ -51,6 +52,7 @@
                             <td>{{ invoice.status }}</td>
                             <td><a href="{{ path('show_user', {user: invoice.user.id}) }}">{{ invoice.user.name }}</a></td>
                             <td>{{ invoice.subscription.service }}</td>
+                            <td>{{ invoice.user.address }}</td>
                             <td>
                                 {% if invoice.value == 0 and invoice.status == 'PAGADA' %}
                                     <div class="btn-group" role="group" style="width: 100%">
