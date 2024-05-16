@@ -7,7 +7,6 @@ use App\Entity\Invoice;
 use App\Entity\Payment;
 use App\Form\ReportPaymentType;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -21,10 +20,16 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
      * @param GeneratePDFController $generatePdfController
+     * @param GenerateExcelController $generateExcelController
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, GeneratePDFController $generatePdfController)
-    {
-        $this->generatePdfController = $generatePdfController;
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ValidatorInterface $validator,
+        GeneratePDFController $generatePdfController,
+        GenerateExcelController $generateExcelController
+    ) {
+        $this->PdfController = $generatePdfController;
+        $this->ExcelController = $generateExcelController;
         parent::__construct($entityManager, $validator);
     }
 
@@ -147,7 +152,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
                 if ($name_clicked_button === 'send_pdf') {
                     $payments = $this->entityManager->getRepository(Payment::class)->findPaymentsByFields($fields);
                     if (!empty($payments)) {
-                        return $this->generatePdfController->generatePaymentReport($payments);
+                        return $this->PdfController->generatePaymentReport($payments);
                     } else {
                         $this->addFlash('error', 'No hay reporte PDF para esta consulta.');
                         return $this->redirectToRoute('report');
@@ -156,7 +161,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
                 } else {
                     $payments = $this->entityManager->getRepository(Payment::class)->findPaymentsByFields($fields);
                     if (!empty($payments)) {
-                        return $this->generatePdfController->generatePaymentReport($payments);
+                        return $this->ExcelController->generatePaymentReport($payments);
                     } else {
                         $this->addFlash('error', 'No hay reporte Excel para esta consulta.');
                         return $this->redirectToRoute('report');
