@@ -88,12 +88,4 @@ class GenerateExcelController extends MainController
         );
         return $response;
     }
-
-    #[Route('/generate/excel', name: 'app_generate_excel')]
-    public function index(): Response
-    {
-        return $this->render('generate_excel/index.html.twig', [
-            'controller_name' => 'GenerateExcelController',
-        ]);
-    }
 }
