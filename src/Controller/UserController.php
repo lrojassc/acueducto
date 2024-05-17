@@ -27,6 +27,7 @@ class UserController extends MainController
     #[Route('/create/user', name: 'create_user')]
     public function create(Request $request): Response
     {
+        $config = $this->getConfig();
         $form = $this->createForm(CreateUserType::class);
         $submittedToken = $request->getPayload()->get('token_create_user');
         if ($this->isCsrfTokenValid('create-user', $submittedToken)) {
@@ -49,7 +50,7 @@ class UserController extends MainController
                 // Crear factura asociada a la adquisicion del servicio
                 $invoice = new Invoice();
                 $invoice->setUser($user);
-                $invoice->setValue(700000);
+                $invoice->setValue($config['value_subscription']);
                 $invoice->setDescription('Suscripción al servicio de acueducto');
                 $invoice->setYearInvoiced(date('Y'));
                 $invoice->setMonthInvoiced($this->monthsNumber[date('m')]);
@@ -79,14 +80,20 @@ class UserController extends MainController
     #[Route('/list/users', name: 'list_users')]
     public function list(): Response
     {
+        $config = $this->getConfig();
+        $number_items = $config['number_items'];
         return $this->render('user/list.html.twig', [
-            'users' => $this->entityManager->getRepository(User::class)->findAll()
+            'users' => $this->entityManager->getRepository(User::class)->findAll(),
+            'number_items' => $number_items
         ]);
     }
 
     #[Route('/show/user/{user}', name: 'show_user')]
     public function show(User $user): Response
     {
+        $config = $this->getConfig();
+        $number_items = $config['number_items'];
+
         $active_invoices = $this->entityManager->getRepository(Invoice::class)->findInvoicesActivesByUser($user->getId());
         $subscription_status = $user->getPaidSubscription() === 'PAGADA'
             ? 'Esta suscripción se encuentra PAGADA completamente'
@@ -95,7 +102,8 @@ class UserController extends MainController
         return $this->render('user/show.html.twig', [
             'user' => $user,
             'subscription_status' => $subscription_status,
-            'invoices' => $active_invoices
+            'invoices' => $active_invoices,
+            'number_items' => $number_items
         ]);
     }
 

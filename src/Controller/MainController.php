@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -67,5 +68,23 @@ class MainController extends AbstractController
             }
         }
         return $services;
+    }
+
+    public function getConfig(): array
+    {
+        $data_config = $this->entityManager->getRepository(Config::class)->findAll();
+        $data = !empty($data_config) ? $data_config[0] : new Config();
+
+        $monthly_invoice_value = $data->getValueInvoice() !== null ? $data->getValueInvoice() : 10000;
+        $value_subscription = $data->getValueSubscription() !== null ? $data->getValueSubscription() : 700000;
+        $bulk_billing_month = $data->getMonthInvoiced() !== null ? $data->getMonthInvoiced() : $this->monthsNumber[date('m')];
+        $number_items = $data->getNumberRecordsTable() !== null ? $data->getNumberRecordsTable() : 20;
+
+        return [
+            'monthly_invoice_value' => $monthly_invoice_value,
+            'value_subscription' => $value_subscription,
+            'bulk_billing_month' => $bulk_billing_month,
+            'number_items' => $number_items,
+        ];
     }
 }

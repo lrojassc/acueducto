@@ -91,8 +91,12 @@ class GeneratePDFController extends MainController
         $dompdf->loadHtml($html);
         $dompdf->setPaper('legal');
         $dompdf->render();
+        $output = $dompdf->output();
 
-        return new Response($dompdf->output(), 200, ['Content-Type' => 'application/pdf']);
+        $response = new Response($output);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Disposition', 'inline; filename="FacturasMensuales.pdf"');
+        return $response;
     }
 
     #[Route('/pdf/create/invoice-payment-report/{invoice}', name: 'invoice_payment_report')]

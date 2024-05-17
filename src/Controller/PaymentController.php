@@ -36,8 +36,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
     #[Route('/list/payments', name: 'list_payments')]
     public function list(): Response
     {
+        $config = $this->getConfig();
+        $number_items = $config['number_items'];
+
         return $this->render('payment/list.html.twig', [
-            'payments' => $this->entityManager->getRepository(Payment::class)->findAll()
+            'payments' => $this->entityManager->getRepository(Payment::class)->findAll(),
+            'number_items' => $number_items
         ]);
     }
 

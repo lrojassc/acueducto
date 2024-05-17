@@ -56,8 +56,12 @@ class InvoiceController extends MainController
     #[Route('/list/invoices', name: 'list_invoices')]
     public function list(): Response
     {
+        $config = $this->getConfig();
+        $number_items = $config['number_items'];
+
         return $this->render('invoice/list.html.twig', [
-            'invoices' => $this->entityManager->getRepository(Invoice::class)->findByActiveInvoices()
+            'invoices' => $this->entityManager->getRepository(Invoice::class)->findByActiveInvoices(),
+            'number_items' => $number_items
         ]);
     }
 
@@ -108,7 +112,8 @@ class InvoiceController extends MainController
     #[Route('/invoice/massive/invoices', name: 'massive_invoices')]
     public function massive()
     {
-        $current_month = 'ABRIL';
+        $config = $this->getConfig();
+        $current_month = $config['bulk_billing_month'];
         $message_type = 'error';
         $message = 'No se pueden volver a generar el masivo de facturas del mes de ' . $current_month;
 
@@ -124,7 +129,7 @@ class InvoiceController extends MainController
                 foreach ($services_by_user as $service) {
                     if ($service->getStatus() === 'ACTIVO') {
                         $invoice = new Invoice();
-                        $invoice->setValue($user->getFullPayment() === 'SI' ? 10000 : (10000 / 2));
+                        $invoice->setValue($user->getFullPayment() === 'SI' ? $config['monthly_invoice_value'] : ($config['monthly_invoice_value'] / 2));
                         $invoice->setDescription('Servicio acueducto '. $service->getService());
                         $invoice->setYearInvoiced(date('Y'));
                         $invoice->setMonthInvoiced($current_month);
