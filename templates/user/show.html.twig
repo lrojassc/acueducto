@@ -122,9 +122,7 @@
                                     <td>{{ invoice.concept}}</td>
                                     <td>
                                         {% if invoice.value == 0 and invoice.status == 'PAGADA' %}
-                                            <div class="btn-group" role="group" style="width: 65%">
-                                                <button type="button" class="btn btn-info">Imprimir Comprobante</button>
-                                            </div>
+                                            <a type="button" style="width: 65%" class="btn btn-info" href="{{ path('invoice_payment_report', {invoice: invoice.id}) }}">Imprimir</a>
                                         {% else %}
                                             <div class="btn-group" role="group" style="width: 65%">
                                                 <a type="button" class="btn btn-success" href="{{ path('invoice_show', {invoice: invoice.id}) }}">Pagar</a>
@@ -139,7 +137,6 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    <h5>Total Pagado: ${{ total_payment|number_format(0, '.', '.') }}</h5>
                 </div>
             </div>
         </div>

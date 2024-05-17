@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Invoice;
+use App\Entity\Payment;
 use App\Entity\Subscription;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -91,6 +93,38 @@ class GeneratePDFController extends MainController
         $dompdf->render();
 
         return new Response($dompdf->output(), 200, ['Content-Type' => 'application/pdf']);
+    }
+
+    #[Route('/pdf/create/invoice-payment-report/{invoice}', name: 'invoice_payment_report')]
+    public function generateReportPayment(Invoice $invoice): Response
+    {
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $dompdf = new Dompdf($options);
+
+        $payment = $this->entityManager->getRepository(Payment::class)->findBy(['invoice' => $invoice->getId()]);
+        $total_invoices = 0;
+        $payment_date = '';
+        foreach ($payment as $value) {
+            $total_invoices += $value->getValue();
+            $payment_date = $value->getCreatedAt();
+        }
+
+        $html = $this->renderView('pdf/invoice_payment_report.html.twig', [
+            'invoice' => $invoice,
+            'total_invoices' => $total_invoices,
+            'payment_date' => $payment_date,
+        ]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('letter');
+        $dompdf->render();
+        $output = $dompdf->output();
+
+        $response = new Response($output);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Disposition', 'inline; filename="Factura"' . $invoice->getId() . '".pdf"');
+        return $response;
     }
 
     /**

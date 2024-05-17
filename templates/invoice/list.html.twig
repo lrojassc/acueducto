@@ -55,9 +55,7 @@
                             <td>{{ invoice.user.address }}</td>
                             <td>
                                 {% if invoice.value == 0 and invoice.status == 'PAGADA' %}
-                                    <div class="btn-group" role="group" style="width: 100%">
-                                        <button type="button" class="btn btn-info">Imprimir Comprobante</button>
-                                    </div>
+                                    <a type="button" style="width: 100%" class="btn btn-info" href="{{ path('invoice_payment_report', {invoice: invoice.id}) }}">Imprimir</a>
                                 {% else %}
                                     <div class="btn-group" role="group" style="width: 100%">
                                         <a type="button" class="btn btn-success" href="{{ path('invoice_show', {invoice: invoice.id}) }}">Pagar</a>

@@ -1,0 +1,116 @@
+<style>
+        @page {
+             margin: 0;
+        }
+        * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+                height: 100vh;
+                width: 90%;
+                margin: 5%;
+        }
+
+        .container-payments {
+                width: 100%;
+        }
+
+        .title-payment {
+                padding: 10px;
+                text-align: center
+        }
+
+        .payment-data {
+                width: 100%;
+                height: auto;
+                border-color: black;
+                border-width: 1px;
+                border-style: solid;
+                border-spacing: 0;
+                border-collapse: collapse;
+        }
+
+        th, td {
+                padding: 4px;
+                border-bottom: 1px solid #000000;
+        }
+
+        .tr-style {
+                width: 100%;
+                background-color: #ccd1d1;
+                border-color: black;
+                border-width: 1px;
+                border-style: solid
+        }
+
+        .th-style {
+                width: 30%;
+                border-color: black;
+                border-width: 1px;
+                border-style: solid;
+                text-align: left
+        }
+
+</style>
+
+<body>
+        <div class="container-payments">
+                <div class="title-payment">
+                        <h2 style="font-weight: bold; text-align: center; margin-bottom: 2px!important;">JUNTA ADMINISTRADORA DE ACUEDUCTO DEL CENTRO POBLADO QUITURO - TARQUI</h2>
+                        <h4 style="text-decoration: underline; text-align: center; margin-bottom: 5px!important;">NIT: 900.260.525-4</h4>
+                        <br>
+                        <h3 style="">FACTURA {{ invoice.id }} PAGADA</h3>
+                </div>
+                <div class="payments">
+                        <table class="payment-data">
+                                <tr class="tr-style">
+                                        <th class="th-style" scope="col">Usuario</th>
+                                        <td style="background-color: unset">{{ invoice.user.name }}</td>
+                                </tr>
+                                <tr class="tr-style">
+                                        <th class="th-style" scope="col">Servicio</th>
+                                        <td style="background-color: unset">{{ invoice.subscription.service }}</td>
+                                </tr>
+                                <tr class="tr-style">
+                                        <th class="th-style" scope="col">Dirección</th>
+                                        <td style="background-color: unset">{{ invoice.user.address }}</td>
+                                </tr>
+                                <tr class="tr-style">
+                                        <th class="th-style" scope="col">Teléfono</th>
+                                        <td style="background-color: unset">{{ invoice.user.phoneNumber }}</td>
+                                </tr>
+                        </table>
+                        <br>
+                        <table class="payment-data">
+                                <tr class="tr-style">
+                                        <th class="th-style" style="width: 40%;" scope="col">Mes de la Factura</th>
+                                        <td style="background-color: unset">{{ invoice.monthInvoiced }}</td>
+                                </tr>
+                                <tr class="tr-style">
+                                        <th class="th-style" scope="col">Concepto</th>
+                                        <td style="background-color: unset">{{ invoice.concept }}</td>
+                                </tr>
+                                <tr class="tr-style">
+                                        <th class="th-style" scope="col">Estado</th>
+                                        <td style="background-color: unset">{{ invoice.status }}</td>
+                                </tr>
+                                <tr class="tr-style">
+                                        <th class="th-style" scope="col">Descripción de la Factura</th>
+                                        <td style="background-color: unset">{{ invoice.description }}</td>
+                                </tr>
+                                <tr class="tr-style">
+                                        <th class="th-style" scope="col">Valor Pagado de la Factura</th>
+                                        <td style="background-color: unset">${{ total_invoices|number_format(0, '.', '.') }}</td>
+                                </tr>
+                                <tr class="tr-style">
+                                        <th class="th-style" scope="col">Fecha de Pago</th>
+                                        <td style="background-color: unset">{{ payment_date|date('d-m-Y') }}</td>
+                                </tr>
+                        </table>
+                </div>
+        </div>
+</body>
