@@ -41,9 +41,7 @@
                             <td>{{ payment.invoice.subscription.service }}</td>
                             <td>{{ payment.createdAt|date('d-m-Y') }}</td>
                             <td>
-                                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                    <button type="button" class="btn btn-info">Imprimir</button>
-                                </div>
+                                <a type="button" class="btn btn-info" href="{{ path('payment_report', {payment: payment.id}) }}">Imprimir</a>
                             </td>
                         </tr>
                     {% endfor %}

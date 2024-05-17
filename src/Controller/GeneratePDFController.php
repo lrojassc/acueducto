@@ -96,7 +96,7 @@ class GeneratePDFController extends MainController
     }
 
     #[Route('/pdf/create/invoice-payment-report/{invoice}', name: 'invoice_payment_report')]
-    public function generateReportPayment(Invoice $invoice): Response
+    public function generateInvoicePaymentReport(Invoice $invoice): Response
     {
         $options = new Options();
         $options->set('isHtml5ParserEnabled', true);
@@ -124,6 +124,28 @@ class GeneratePDFController extends MainController
         $response = new Response($output);
         $response->headers->set('Content-Type', 'application/pdf');
         $response->headers->set('Content-Disposition', 'inline; filename="Factura"' . $invoice->getId() . '".pdf"');
+        return $response;
+    }
+
+    #[Route('/pdf/create/payment-report/{payment}', name: 'payment_report')]
+    public function generateReportPayment(Payment $payment): Response
+    {
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $dompdf = new Dompdf($options);
+
+        $html = $this->renderView('pdf/payment_report.html.twig', [
+            'payment' => $payment
+        ]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('letter');
+        $dompdf->render();
+        $output = $dompdf->output();
+
+        $response = new Response($output);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Disposition', 'inline; filename="Pago"' . $payment->getId() . '".pdf"');
         return $response;
     }
 
