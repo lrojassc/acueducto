@@ -27,6 +27,7 @@ security:
                 path: logout
                 # where to redirect after logout
                 target: /
+            access_denied_url: /access-denied
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -38,8 +39,14 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/create/user, roles: ROLE_ADMIN }
-        - { path: ^/list/users, roles: ROLE_ADMIN }
+        # - { path: ^/list/users, roles: ROLE_ADMIN }
+        - { path: ^/edit/user/\d+$, roles: ROLE_ADMIN }
+        - { path: ^/pdf/create/massive-invoices, roles: ROLE_ADMIN }
+        - { path: ^/invoice/massive/invoices, roles: ROLE_ADMIN }
+        - { path: ^/create/invoice, roles: ROLE_ADMIN }
+        - { path: ^/payment/generate/report, roles: ROLE_ADMIN }
         - { path: ^/admin/config, roles: ROLE_ADMIN }
+
 
 when@test:
     security:

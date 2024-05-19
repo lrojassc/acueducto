@@ -30,7 +30,6 @@ class GeneratePDFController extends MainController
     #[Route('/pdf/create/massive-invoices', name: 'create_massive_invoices')]
     public function generateMassiveInvoices(): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $options = new Options();
         $options->set('isHtml5ParserEnabled', true);
         $dompdf = new Dompdf($options);

@@ -60,6 +60,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
     #[Route('/add/payment/{invoice}', name: 'add_payment', methods: ['POST'])]
     public function payment(Request $request, Invoice $invoice): Response {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $submittedToken = $request->getPayload()->get('token_payment');
         $message = 'Error en envio del formulario';
 
@@ -142,7 +143,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
     #[Route('/payment/generate/report', name: 'report')]
     public function report(Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $form = $this->createForm(ReportPaymentType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

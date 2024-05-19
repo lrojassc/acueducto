@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserController extends MainController
@@ -88,9 +89,9 @@ class UserController extends MainController
     }
 
     #[Route('/list/users', name: 'list_users')]
+    #[IsGranted('ROLE_ADMIN', message: 'Acceso restringido')]
     public function list(): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $config = $this->getConfig();
         $number_items = $config['number_items'];
         return $this->render('user/list.html.twig', [
@@ -121,7 +122,6 @@ class UserController extends MainController
     #[Route('/edit/user/{user}', name: 'edit_user')]
     public function edit(User $user, Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $active_subscription = $this->entityManager->getRepository(Subscription::class)->findByActiveSubscription($user->getId());
         $form = $this->createForm(CreateUserType::class, $user);
         $form->handleRequest($request);

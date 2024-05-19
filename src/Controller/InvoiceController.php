@@ -32,7 +32,6 @@ class InvoiceController extends MainController
     #[Route('/create/invoice', name: 'create_invoice')]
     public function create(Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $form = $this->createForm(CreateInvoiceType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -80,6 +79,8 @@ class InvoiceController extends MainController
 
     #[Route('/invoice/{invoice}', name: 'invoice_show')]
     public function show(Invoice $invoice): Response {
+        //$this->denyAccessUnlessGranted('ROLE_ADMIN');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Acceso Denegado');
         return $this->render('invoice/show.html.twig', [
             'edit' => FALSE,
             'invoice' => $invoice,
@@ -127,7 +128,6 @@ class InvoiceController extends MainController
     #[Route('/invoice/massive/invoices', name: 'massive_invoices')]
     public function massive()
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $config = $this->getConfig();
         $current_month = $config['bulk_billing_month'];
         $message_type = 'error';
