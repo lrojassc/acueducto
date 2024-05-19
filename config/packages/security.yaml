@@ -5,13 +5,28 @@ security:
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         users_in_memory: { memory: null }
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: document_number
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             lazy: true
-            provider: users_in_memory
+            provider: app_user_provider
+            form_login:
+                login_path: login
+                check_path: login
+                username_parameter: document_number
+                password_parameter: password
+                enable_csrf: true
+                default_target_path: /
+            logout:
+                path: logout
+                # where to redirect after logout
+                target: /
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -22,8 +37,9 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/create/user, roles: ROLE_ADMIN }
+        - { path: ^/list/users, roles: ROLE_ADMIN }
+        - { path: ^/admin/config, roles: ROLE_ADMIN }
 
 when@test:
     security:

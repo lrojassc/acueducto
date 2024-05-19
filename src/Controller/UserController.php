@@ -9,6 +9,7 @@ use App\Form\CreateUserType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -25,8 +26,11 @@ class UserController extends MainController
     }
 
     #[Route('/create/user', name: 'create_user')]
-    public function create(Request $request): Response
+    public function create(Request $request, UserPasswordHasherInterface $userPasswordHasher): Response
     {
+        // Este medoto tambien es utilizado para restringir acceso a algunas paginas
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $config = $this->getConfig();
         $form = $this->createForm(CreateUserType::class);
         $submittedToken = $request->getPayload()->get('token_create_user');
@@ -35,7 +39,11 @@ class UserController extends MainController
             if ($form->isSubmitted() && $form->isValid()) {
                 $user = $form->getData();
                 $user->setPaidSubscription('DEBE');
-                $user->setPassword($user->getDocumentNumber());
+                $user->setRoles(['ROLE_USER']);
+                $user->setPassword($userPasswordHasher->hashPassword(
+                    $user,
+                    $form->get('document_number')->getData()
+                ));
                 $user->setCreatedAt(new \DateTime('now'));
                 $user->setUpdatedAt(new \DateTime('now'));
 
