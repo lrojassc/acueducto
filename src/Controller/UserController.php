@@ -7,6 +7,7 @@ use App\Entity\Subscription;
 use App\Entity\User;
 use App\Form\CreateUserType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -19,10 +20,11 @@ class UserController extends MainController
     /**
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
+     * @param Security $security
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, Security $security)
     {
-        parent::__construct($entityManager, $validator);
+        parent::__construct($entityManager, $validator, $security);
     }
 
     #[Route('/create/user', name: 'create_user')]
@@ -88,6 +90,7 @@ class UserController extends MainController
     #[Route('/list/users', name: 'list_users')]
     public function list(): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $config = $this->getConfig();
         $number_items = $config['number_items'];
         return $this->render('user/list.html.twig', [
@@ -118,6 +121,7 @@ class UserController extends MainController
     #[Route('/edit/user/{user}', name: 'edit_user')]
     public function edit(User $user, Request $request): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $active_subscription = $this->entityManager->getRepository(Subscription::class)->findByActiveSubscription($user->getId());
         $form = $this->createForm(CreateUserType::class, $user);
         $form->handleRequest($request);

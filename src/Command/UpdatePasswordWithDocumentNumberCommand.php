@@ -10,24 +10,26 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[AllowDynamicProperties] #[AsCommand(
-    name: 'app:add-role-users',
-    description: 'Agregar rol a todos los usuarios registrados',
+    name: 'app:update-password-with-document-number',
+    description: 'Actualizar contraseña con numero de documento',
 )]
-class AddRoleUsersCommand extends Command
+class UpdatePasswordWithDocumentNumberCommand extends Command
 {
-    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository)
+    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository, UserPasswordHasherInterface $passwordHasher)
     {
         parent::__construct();
 
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
+        $this->passwordHasher = $passwordHasher;
     }
 
     protected function configure(): void
     {
-        $this->setName('Asignar rol a totos los usuarios');
+        $this->setName('Actualizar contraseña con numero de documento');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -35,10 +37,14 @@ class AddRoleUsersCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $users = $this->userRepository->findAll();
         foreach ($users as $user) {
-            $user->setRoles(['ROLE_USER']);
+            $password = $this->passwordHasher->hashPassword(
+                $user,
+                $user->getDocumentNumber()
+            );
+            $user->setPassword($password);
         }
         $this->entityManager->flush();
-        $io->success('Todos los usuarios fueron actualizados de rol correctamente.');
+        $io->success('Actualizada la contraseña de todos los usuarios con su numero de identificacion');
 
         return Command::SUCCESS;
     }

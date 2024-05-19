@@ -22,30 +22,25 @@ class PaymentRepository extends ServiceEntityRepository
         parent::__construct($registry, Payment::class);
     }
 
-    //    /**
-    //     * @return Payment[] Returns an array of Payment objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Obtener facturas por usuario
+     *
+     * @param $user_id
+     *
+     * @return mixed
+     */
+    public function findPaymentsByUser($user_id): mixed
+    {
+        return $this->createQueryBuilder('p')
+            ->innerJoin('p.invoice', 'i')
+            ->innerJoin('i.user', 'u')
+            ->andWhere('u.id = :id')
+            ->setParameter('id', $user_id)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 
-    //    public function findOneBySomeField($value): ?Payment
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
     public function findPaymentsByFields($fields)
     {
         $query = $this->createQueryBuilder('p');

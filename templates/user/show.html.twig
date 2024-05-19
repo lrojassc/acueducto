@@ -124,11 +124,13 @@
                                         {% if invoice.value == 0 and invoice.status == 'PAGADA' %}
                                             <a type="button" style="width: 65%" class="btn btn-info" href="{{ path('invoice_payment_report', {invoice: invoice.id}) }}">Imprimir</a>
                                         {% else %}
-                                            <div class="btn-group" role="group" style="width: 65%">
-                                                <a type="button" class="btn btn-success" href="{{ path('invoice_show', {invoice: invoice.id}) }}">Pagar</a>
-                                                <a type="button" class="btn btn-warning" href="{{ path('edit_invoice', {invoice: invoice.id}) }}">Editar</a>
-                                                <a type="button" class="btn btn-danger" id="delete-invoice">Eliminar</a>
-                                            </div>
+                                            {% if is_granted('ROLE_ADMIN') %}
+                                                <div class="btn-group" role="group" style="width: 65%">
+                                                    <a type="button" class="btn btn-success" href="{{ path('invoice_show', {invoice: invoice.id}) }}">Pagar</a>
+                                                    <a type="button" class="btn btn-warning" href="{{ path('edit_invoice', {invoice: invoice.id}) }}">Editar</a>
+                                                    <a type="button" class="btn btn-danger" id="delete-invoice">Eliminar</a>
+                                                </div>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                 </tr>

@@ -14,14 +14,16 @@
                 {{ flashMessage }}
             </div>
         {% endfor %}
-        <ul class="nav nav-underline mb-3">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('massive_invoices') }}">Generar Facturas Mensuales</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('create_massive_invoices') }}">Generar Facturas en PDF</a>
-            </li>
-        </ul>
+        {% if is_granted('ROLE_ADMIN') %}
+            <ul class="nav nav-underline mb-3">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('massive_invoices') }}">Generar Facturas Mensuales</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('create_massive_invoices') }}">Generar Facturas en PDF</a>
+                </li>
+            </ul>
+        {% endif %}
         <div class="row">
             <div class="col">
                 <table id="datatable_invoices" class="table table-striped table-bordered" data-page-length='{{ number_items }}' style="width: 100%">
@@ -57,11 +59,13 @@
                                 {% if invoice.value == 0 and invoice.status == 'PAGADA' %}
                                     <a type="button" style="width: 100%" class="btn btn-info" href="{{ path('invoice_payment_report', {invoice: invoice.id}) }}">Imprimir</a>
                                 {% else %}
-                                    <div class="btn-group" role="group" style="width: 100%">
-                                        <a type="button" class="btn btn-success" href="{{ path('invoice_show', {invoice: invoice.id}) }}">Pagar</a>
-                                        <a type="button" class="btn btn-warning" href="{{ path('edit_invoice', {invoice: invoice.id}) }}">Editar</a>
-                                        <a type="button" class="btn btn-danger" id="delete-invoice">Eliminar</a>
-                                    </div>
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        <div class="btn-group" role="group" style="width: 100%">
+                                            <a type="button" class="btn btn-success" href="{{ path('invoice_show', {invoice: invoice.id}) }}">Pagar</a>
+                                            <a type="button" class="btn btn-warning" href="{{ path('edit_invoice', {invoice: invoice.id}) }}">Editar</a>
+                                            <a type="button" class="btn btn-danger" id="delete-invoice">Eliminar</a>
+                                        </div>
+                                    {% endif %}
                                 {% endif %}
                             </td>
                         </tr>
