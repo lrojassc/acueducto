@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class MainController extends AbstractController
@@ -20,10 +21,13 @@ class MainController extends AbstractController
      */
     protected ValidatorInterface $validator;
 
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    protected Security $security;
+
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, Security $security)
     {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
+        $this->security = $security;
     }
 
     protected array $monthsNumber = [

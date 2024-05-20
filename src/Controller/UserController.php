@@ -7,9 +7,12 @@ use App\Entity\Subscription;
 use App\Entity\User;
 use App\Form\CreateUserType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserController extends MainController
@@ -18,15 +21,19 @@ class UserController extends MainController
     /**
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
+     * @param Security $security
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, Security $security)
     {
-        parent::__construct($entityManager, $validator);
+        parent::__construct($entityManager, $validator, $security);
     }
 
     #[Route('/create/user', name: 'create_user')]
-    public function create(Request $request): Response
+    public function create(Request $request, UserPasswordHasherInterface $userPasswordHasher): Response
     {
+        // Este medoto tambien es utilizado para restringir acceso a algunas paginas
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $config = $this->getConfig();
         $form = $this->createForm(CreateUserType::class);
         $submittedToken = $request->getPayload()->get('token_create_user');
@@ -35,7 +42,11 @@ class UserController extends MainController
             if ($form->isSubmitted() && $form->isValid()) {
                 $user = $form->getData();
                 $user->setPaidSubscription('DEBE');
-                $user->setPassword($user->getDocumentNumber());
+                $user->setRoles(['ROLE_USER']);
+                $user->setPassword($userPasswordHasher->hashPassword(
+                    $user,
+                    $form->get('document_number')->getData()
+                ));
                 $user->setCreatedAt(new \DateTime('now'));
                 $user->setUpdatedAt(new \DateTime('now'));
 
@@ -78,6 +89,7 @@ class UserController extends MainController
     }
 
     #[Route('/list/users', name: 'list_users')]
+    #[IsGranted('ROLE_ADMIN', message: 'Acceso restringido')]
     public function list(): Response
     {
         $config = $this->getConfig();

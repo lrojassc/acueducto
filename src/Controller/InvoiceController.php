@@ -8,6 +8,7 @@ use App\Entity\Subscription;
 use App\Entity\User;
 use App\Form\CreateInvoiceType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,10 +22,11 @@ class InvoiceController extends MainController
     /**
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
+     * @param Security $security
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, Security $security)
     {
-        parent::__construct($entityManager, $validator);
+        parent::__construct($entityManager, $validator, $security);
     }
 
     #[Route('/create/invoice', name: 'create_invoice')]
@@ -56,17 +58,29 @@ class InvoiceController extends MainController
     #[Route('/list/invoices', name: 'list_invoices')]
     public function list(): Response
     {
+        $user = $this->security->getUser();
+        $roles = $user->getRoles();
+
+        // Comprobar el rol de usuario para mostrar listado de facturas
+        if ($roles[0] == 'ROLE_ADMIN') {
+            $invoices = $this->entityManager->getRepository(Invoice::class)->findByActiveInvoices();
+        } else {
+            $invoices = $this->entityManager->getRepository(Invoice::class)->findInvoicesActivesByUser($user->getId());
+        }
+
         $config = $this->getConfig();
         $number_items = $config['number_items'];
 
         return $this->render('invoice/list.html.twig', [
-            'invoices' => $this->entityManager->getRepository(Invoice::class)->findByActiveInvoices(),
+            'invoices' => $invoices,
             'number_items' => $number_items
         ]);
     }
 
     #[Route('/invoice/{invoice}', name: 'invoice_show')]
     public function show(Invoice $invoice): Response {
+        //$this->denyAccessUnlessGranted('ROLE_ADMIN');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Acceso Denegado');
         return $this->render('invoice/show.html.twig', [
             'edit' => FALSE,
             'invoice' => $invoice,
@@ -92,6 +106,7 @@ class InvoiceController extends MainController
     #[Route('/invoice/edit/{invoice}', name: 'edit_invoice')]
     public function edit(Invoice $invoice, Request $request)
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         return $this->render('invoice/show.html.twig', [
             'edit' => TRUE,
             'invoice' => $invoice,
@@ -101,6 +116,7 @@ class InvoiceController extends MainController
     #[Route('/invoice/update/{invoice}', name: 'update_invoice')]
     public function update(Invoice $invoice, Request $request): RedirectResponse
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $value_invoice = str_replace(["$", "."], '', $request->request->get('valueInvoice'));
         $invoice->setValue($value_invoice);
         $this->entityManager->persist($invoice);

@@ -7,6 +7,7 @@ use App\Entity\Invoice;
 use App\Entity\Payment;
 use App\Form\ReportPaymentType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -19,34 +20,47 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
     /**
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
+     * @param Security $security
      * @param GeneratePDFController $generatePdfController
      * @param GenerateExcelController $generateExcelController
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
+        Security $security,
         GeneratePDFController $generatePdfController,
         GenerateExcelController $generateExcelController
     ) {
         $this->PdfController = $generatePdfController;
         $this->ExcelController = $generateExcelController;
-        parent::__construct($entityManager, $validator);
+        parent::__construct($entityManager, $validator, $security);
     }
 
     #[Route('/list/payments', name: 'list_payments')]
     public function list(): Response
     {
+        $user = $this->security->getUser();
+        $roles = $user->getRoles();
+
+        // Comprobar el rol de usuario para mostrar listado de facturas
+        if ($roles[0] == 'ROLE_ADMIN') {
+            $payments = $this->entityManager->getRepository(Payment::class)->findAll();
+        } else {
+            $payments = $this->entityManager->getRepository(Payment::class)->findPaymentsByUser($user->getId());
+        }
+
         $config = $this->getConfig();
         $number_items = $config['number_items'];
 
         return $this->render('payment/list.html.twig', [
-            'payments' => $this->entityManager->getRepository(Payment::class)->findAll(),
+            'payments' => $payments,
             'number_items' => $number_items
         ]);
     }
 
     #[Route('/add/payment/{invoice}', name: 'add_payment', methods: ['POST'])]
     public function payment(Request $request, Invoice $invoice): Response {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $submittedToken = $request->getPayload()->get('token_payment');
         $message = 'Error en envio del formulario';
 
