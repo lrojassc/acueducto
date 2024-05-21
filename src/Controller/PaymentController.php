@@ -11,6 +11,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -65,15 +66,21 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
         $message = 'Error en envio del formulario';
 
         $payment_value = $request->request->get('paymentValue');
+        $type_value_payment = is_numeric($payment_value);
         $payment_description = $request->request->get('paymentDescription');
         $validations = [
             'paymentValue' => [
                 'field' => $payment_value,
-                'constraint' => [new NotBlank(message: 'El campo Valor a Pagar no puede estar vacío')]
+                'constraint' => [
+                    new NotBlank(message: 'El campo Valor a Pagar no puede estar vacío')]
             ],
             'paymentDescription' => [
                 'field' => $payment_description,
                 'constraint' => [new NotBlank(message: 'El campo Descripción del Pago no puede estar vacío')]
+            ],
+            'paymentValueType' => [
+                'field' => $type_value_payment,
+                'constraint' => [new IsTrue(message: 'El valor del pago deber ser numerico')]
             ]
         ];
 
