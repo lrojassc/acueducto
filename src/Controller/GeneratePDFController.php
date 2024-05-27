@@ -158,6 +158,30 @@ class GeneratePDFController extends MainController
         return $response;
     }
 
+    #[Route('/pdf/generate-account-status-by-user/{user}', name: 'account_status_by_user')]
+    public function generateAccountStatusByUser(User $user): Response
+    {
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $dompdf = new Dompdf($options);
+        $total_invoices = $this->getTotalInvoices($user->getInvoices());
+
+        $html = $this->renderView('pdf/account_status_by_user.html.twig', [
+            'user' => $user,
+            'total_invoices' => $total_invoices
+        ]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('letter');
+        $dompdf->render();
+        $output = $dompdf->output();
+
+        $response = new Response($output);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Disposition', 'inline; filename="AccountStatus"' . $user->getName() . '".pdf"');
+        return $response;
+    }
+
     /**
      * Generar reporte de pagos por filtro aplicado desde formulario
      *
@@ -176,5 +200,42 @@ class GeneratePDFController extends MainController
         $dompdf->setPaper('letter');
         $dompdf->render();
         return new Response($dompdf->output(), 200, ['Content-Type' => 'application/pdf']);
+    }
+
+    /**
+     * Obtener el total de facturas y sus saldos correspondientes
+     *
+     * @param $invoices_by_user
+     *
+     * @return array
+     */
+    public function getTotalInvoices($invoices_by_user): array
+    {
+        $total_pending_value = $total_made_payments = 0;
+
+        foreach ($invoices_by_user as $invoice) {
+            $pending_invoice_value = (int)str_replace(["$", "."], '', $invoice->getValue());
+            $total_pending_value += $pending_invoice_value;
+
+            $payment_made = $this->getTotalPayment($invoice->getPayments());
+            $total_made_payments += $payment_made;
+        }
+
+        $total_invoices = $total_pending_value + $total_made_payments;
+        return [
+            'total_pending_value' => $total_pending_value,
+            'total_made_payments' => $total_made_payments,
+            'total_invoices' => $total_invoices,
+        ];
+    }
+
+    public function getTotalPayment($payments)
+    {
+        $total_payment = 0;
+        foreach ($payments as $payment) {
+            $payment_value = $payment->getValue();
+            $total_payment += $payment_value;
+        }
+        return $total_payment;
     }
 }

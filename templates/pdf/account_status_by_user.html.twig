@@ -1,0 +1,111 @@
+<style>
+        @page {
+             margin: 0;
+        }
+        * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+                height: 100vh;
+                width: 90%;
+                margin: 5%;
+        }
+
+        .container-payments {
+                width: 100%;
+        }
+
+        .title-payment {
+                padding: 10px;
+                text-align: center
+        }
+
+        .user-info {
+                padding:14px;
+                width: auto;
+                height: 12%;
+                border-color: black;
+                border-width: 1px;
+                border-style: solid;
+        }
+
+        .payment-data {
+                width: 100%;
+                height: auto;
+                border-color: black;
+                border-width: 1px;
+                border-style: solid;
+                border-spacing: 0;
+                border-collapse: collapse;
+        }
+
+        th, td {
+                padding: 4px;
+                border-bottom: 1px solid #000000;
+        }
+
+</style>
+
+<body>
+        <div class="container-payments">
+                <div class="title-payment">
+                        <h2 style="font-weight: bold; text-align: center; margin-bottom: 2px!important;">JUNTA ADMINISTRADORA DE ACUEDUCTO DEL CENTRO POBLADO QUITURO - TARQUI</h2>
+                        <h4 style="text-decoration: underline; text-align: center; margin-bottom: 5px!important;">NIT: 900.260.525-4</h4>
+                        <br>
+                        <h3 style="">ESTADO DE CUENTA</h3>
+                </div>
+                <div class="user-info">
+                        <h3>Usuario suscriptor: {{ user.name}}</h3>
+                        <h3>Número de documento: {{ user.documentNumber}}</h3>
+                        <h3>Telefono: {{ user.phoneNumber}}</h3>
+                        <h3>Dirección: {{ user.address}}</h3>
+                        <h3>Estado Suscripción: {{ user.paidSubscription}}</h3>
+                </div>
+                <br>
+                <table class="payment-data">
+                        <caption>Resumen de todas las facturas</caption>
+                        <thead class="head-table">
+                        <tr style="background-color: #939798">
+                                <th scope="col">No. </th>
+                                <th scope="col">Año</th>
+                                <th scope="col">Mes</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Concepto</th>
+                                <th scope="col">Servicio del suscriptor</th>
+                                <th scope="col">Saldo</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for invoice in user.invoices %}
+                                <tr>
+                                        <td>{{ invoice.id}}</td>
+                                        <td>{{ invoice.yearInvoiced}}</td>
+                                        <td>{{ invoice.monthInvoiced}}</td>
+                                        <td>{{ invoice.status}}</td>
+                                        <td>{{ invoice.concept}}</td>
+                                        <td>{{ invoice.subscription.service}}</td>
+                                        <td>${{ invoice.value|number_format(0, '.', '.')}}</td>
+                                </tr>
+                        {% endfor %}
+                </table>
+                <br>
+                <table>
+                        <tr>
+                                <td style="font-weight: bold; font-size: 20px">Saldo Pendiente: </td>
+                                <td style="font-size: 20px">${{ total_invoices.total_pending_value|number_format(0, '.', '.') }}</td>
+                        </tr>
+                        <tr>
+                                <td style="font-weight: bold; font-size: 20px">Valor Pagado: </td>
+                                <td style="font-size: 20px">${{ total_invoices.total_made_payments|number_format(0, '.', '.') }}</td>
+                        </tr>
+                        <tr>
+                                <td style="font-weight: bold; font-size: 20px">Total Facturas: </td>
+                                <td style="font-size: 20px">${{ total_invoices.total_invoices|number_format(0, '.', '.') }}</td>
+                        </tr>
+                </table>
+        </div>
+</body>
