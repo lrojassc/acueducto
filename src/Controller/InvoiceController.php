@@ -110,7 +110,7 @@ class InvoiceController extends MainController
                     $payment = new Payment();
                     $payment->setInvoice($invoice);
                     $payment->setValue($value_payment_invoice);
-                    $payment->setDescription('Pago factura mes ' . $month);
+                    $payment->setDescription('Pago factura mes de ' . $month . ' adelantado');
                     $payment->setMethod('EFECTIVO');
                     $payment->setMonthInvoiced($month);
                     $payment->setCreatedAt(new \DateTime('now'));
