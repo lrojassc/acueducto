@@ -66,8 +66,7 @@ class InvoiceController extends MainController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $data_invoice = $form->getData();
-            $value_payment_invoice = $data_invoice->getUser()->getFullPayment()  === 'SI'
-                ? $data_invoice->getValue() : ($data_invoice->getValue() / 2);
+            $value_payment_invoice = $data_invoice->getValue();
 
             $is_value_payment = !($value_payment_invoice < 5000);
             $month_invoiced = $request->request->all('month_invoiced_payment');
