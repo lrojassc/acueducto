@@ -69,23 +69,26 @@ class GeneratePDFController extends MainController
                 $observation = $invoices_pending >= 1 ? 'Por favor realice el pago de forma inmediata'
                     : 'Felicitaciones usted se encuentra al día';
 
-                $invoices_print[] = [
-                    'user' => $user->getName(),
-                    'address' => $user->getAddress() . ' - ' . $user->getCity(),
-                    'user_code' => $user->getId(),
-                    'service' => $service->getService(),
-                    'total_amount_invoices' => $total_amount_invoices,
-                    'arrears' => $invoices_pending,
-                    'value_last_invoice' => $value_last_invoice,
-                    'description_last_invoice' => $description_last_invoice,
-                    'observation' => $observation,
-                    'period' => 'Del 01 al 30 de ' . $month_invoiced,
-                    'invoice_pending' => $invoice_pending,
-                    'id_last_invoice' => $id_last_invoice,
-                    'payment_deadline' => 'Hasta el 25 de ' . $this->monthsNumber[date("m", strtotime("+1 month"))],
-                    'subscription_debt' => $subscription_debt,
-                    'description_subscription' => $description_subscription
-                ];
+                // Si el usuario tiene facturas pagas adelantadas no se genera recibo
+                if ($invoices_pending >= 0) {
+                    $invoices_print[] = [
+                        'user' => $user->getName(),
+                        'address' => $user->getAddress() . ' - ' . $user->getCity(),
+                        'user_code' => $user->getId(),
+                        'service' => $service->getService(),
+                        'total_amount_invoices' => $total_amount_invoices,
+                        'arrears' => $invoices_pending,
+                        'value_last_invoice' => $value_last_invoice,
+                        'description_last_invoice' => $description_last_invoice,
+                        'observation' => $observation,
+                        'period' => 'Del 01 al 30 de ' . $month_invoiced,
+                        'invoice_pending' => $invoice_pending,
+                        'id_last_invoice' => $id_last_invoice,
+                        'payment_deadline' => 'Hasta el 25 de ' . $this->monthsNumber[date("m", strtotime("+1 month"))],
+                        'subscription_debt' => $subscription_debt,
+                        'description_subscription' => $description_subscription
+                    ];
+                }
             }
         }
         $html = $this->renderView('pdf/massive_invoice.html.twig', ['invoices_print' => array_chunk($invoices_print, 2)]);
