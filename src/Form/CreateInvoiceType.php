@@ -54,18 +54,6 @@ class CreateInvoiceType extends AbstractType
                     'SUSCRIPCION' => 'SUSCRIPCION',
                 ]
             ])
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'name',
-                'label' => 'Seleccione un Usuario Suscriptor',
-            ])
-            /*
-            ->add('subscription', EntityType::class, [
-                'class' => Subscription::class,
-                'choice_label' => 'id',
-            ])
-            */
-
             ->add('save', SubmitType::class, [
                 'label' => 'Crear Factura',
                 'attr' => ['class' => 'btn btn-outline-secondary']
@@ -79,6 +67,7 @@ class CreateInvoiceType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Invoice::class,
             'csrf_protection' => true,
+            'allow_extra_fields' => true
         ]);
     }
 }

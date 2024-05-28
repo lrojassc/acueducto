@@ -22,13 +22,12 @@
             <div class="card-body">
                 {{ form_start(form_create_advance_invoice) }}
                     <div class="form-floating mb-3 mt-3 col">
-                        <select class="form-select" id="userInvoice" name="{{ field_name(form_create_advance_invoice.user) }}">
-                            <option value="seleccione">--Seleccione Suscriptor--</option>
-                            {% for label, value in field_choices(form_create_advance_invoice.user) %}
-                                <option value="{{ value }}">{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                        <label>{{ field_label(form_create_advance_invoice.user) }}</label>
+                        <input type="text" class="form-control" id="autocompleteName" name="user_name">
+                        <label>Escriba Nombre del Usuario</label>
+                    </div>
+                    <div class="form-floating mb-3 mt-3 col">
+                        <select class="form-select" id="userInvoice" name="userInvoice" style="display: none;"></select>
+                        <label>Seleccione un Usuario</label>
                     </div>
                     <div id="serviceOptions" class="form-floating mb-3 mt-3 col" style="display: none">
                         <!-- Aquí se mostrarán las opciones dependiendo del producto seleccionado -->
@@ -109,8 +108,43 @@
     </div>
 </div>
 <script>
+    document.getElementById('autocompleteName').addEventListener('input', function() {
+        const query = this.value;
+        if (query.length === 0) {
+            document.getElementById('autocomplete-results').style.display = 'none';
+            return;
+        }
+        fetch(`/user/autocomplete?name=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                const results = document.getElementById('userInvoice');
+                results.innerHTML = '';
+
+                if (data.length > 0) {
+                    results.style.display = 'block';
+
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = item.name;
+                        results.appendChild(option);
+                    });
+
+                    // Seleccionar automáticamente si solo hay un resultado
+                    if (data.length === 1) {
+                        results.selectedIndex = 0;
+                        results.dispatchEvent(new Event('change'));
+                    }
+                } else {
+                    results.style.display = 'none';
+                }
+            });
+    });
+
     document.getElementById('userInvoice').addEventListener('change', function () {
-        var userId = this.value;
+        const selectedOption = this.options[this.selectedIndex];
+        const userId = selectedOption.value;
+        console.log(userId)
         if (userId !== '') {
             fetch('/subscriptions/' + userId + '/service')
                 .then(response => response.json())

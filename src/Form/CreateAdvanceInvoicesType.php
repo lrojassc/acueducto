@@ -34,12 +34,6 @@ class CreateAdvanceInvoicesType extends AbstractType
                     'MENSUALIDAD' => 'MENSUALIDAD',
                 ]
             ])
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'name',
-                'label' => 'Seleccione un Usuario Suscriptor',
-            ])
-
             ->add('save', SubmitType::class, [
                 'label' => 'Generar Facturas y Pagar',
                 'attr' => ['class' => 'btn btn-outline-secondary']

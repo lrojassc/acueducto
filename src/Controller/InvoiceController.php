@@ -39,6 +39,7 @@ class InvoiceController extends MainController
         $form = $this->createForm(CreateInvoiceType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $user_id = $request->request->get('userInvoice');
             $id_subscription = $request->request->get('serviceUser');
             $invoice = $form->getData();
             $invoice->setYearInvoiced(date('Y'));
@@ -46,7 +47,7 @@ class InvoiceController extends MainController
             $invoice->setCreatedAt(new \DateTime('now'));
             $invoice->setUpdatedAt(new \DateTime('now'));
 
-            $invoice->setUser($invoice->getUser());
+            $invoice->setUser($this->entityManager->getRepository(User::class)->find($user_id));
             $invoice->setSubscription($this->entityManager->getRepository(Subscription::class)->find($id_subscription));
 
             $this->entityManager->persist($invoice);
@@ -65,6 +66,8 @@ class InvoiceController extends MainController
         $form = $this->createForm(CreateAdvanceInvoicesType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $user_id = $request->request->get('userInvoice');
+            $user = $this->entityManager->getRepository(User::class)->find($user_id);
             $data_invoice = $form->getData();
             $value_payment_invoice = $data_invoice->getValue();
 
@@ -96,7 +99,7 @@ class InvoiceController extends MainController
                 $paid_month = '';
                 foreach ($month_invoiced as $month) {
                     $invoice = new Invoice();
-                    $invoice->setUser($data_invoice->getUser());
+                    $invoice->setUser($user);
                     $invoice->setValue(0);
                     $invoice->setDescription($data_invoice->getDescription());
                     $invoice->setConcept($data_invoice->getConcept());
@@ -123,10 +126,10 @@ class InvoiceController extends MainController
 
                     $paid_month .= $month . ' - ';
                 }
-                $name_user = $data_invoice->getUser()->getName();
                 $message_type = 'success';
-                $message = 'Se acaban de generar y pagar las facturas de ' . rtrim($paid_month, '- ') . ' Para el usuario ' . $name_user;
+                $message = 'Se acaban de generar y pagar las facturas de ' . rtrim($paid_month, '- ') . ' Para el usuario ' . $user->getName();
                 $this->addFlash($message_type, $message);
+                return $this->redirectToRoute('create_advance_invoices');
             }
         }
         return $this->render('invoice/create_advance_invoices.html.twig', [
