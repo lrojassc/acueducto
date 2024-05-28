@@ -14,48 +14,28 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class CreateInvoiceType extends AbstractType
+class CreateAdvanceInvoicesType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('value', IntegerType::class,  [
-                'label' => 'Valor de la Factura',
+                'label' => 'Valor Mensual Para Las Facturas',
                 'required' => TRUE,
                 'constraints' => new NotBlank()
             ])
             ->add('description', TextType::class, [
                 'label' => 'Descripción de la Factura',
             ])
-            ->add('month_invoiced', ChoiceType::class, [
-                'label' => 'Mes de la Factura',
-                'required' => true,
-                'choices' => [
-                    'ENERO' => 'ENERO',
-                    'FEBRERO' => 'FEBRERO',
-                    'MARZO' => 'MARZO',
-                    'ABRIL' => 'ABRIL',
-                    'MAYO' => 'MAYO',
-                    'JUNIO' => 'JUNIO',
-                    'JULIO' => 'JULIO',
-                    'AGOSTO' => 'AGOSTO',
-                    'SEPTIEMBRE' => 'SEPTIEMBRE',
-                    'OCTUBRE' => 'OCTUBRE',
-                    'NOVIEMBRE' => 'NOVIEMBRE',
-                    'DICIEMBRE' => 'DICIEMBRE',
-                ]
-            ])
             ->add('concept', ChoiceType::class, [
                 'label' => 'Concepto',
                 'required' => true,
                 'choices' => [
                     'MENSUALIDAD' => 'MENSUALIDAD',
-                    'RECONECCION' => 'RECONECCION',
-                    'SUSCRIPCION' => 'SUSCRIPCION',
                 ]
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Crear Factura',
+                'label' => 'Generar Facturas y Pagar',
                 'attr' => ['class' => 'btn btn-outline-secondary']
             ])
         ;

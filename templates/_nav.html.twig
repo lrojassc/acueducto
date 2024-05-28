@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ path('index') }}">
-                <img src="{{ asset('imagen/quituro.png') }}" alt="Bootstrap" width="220" height="40">
+                <img src="/assets/imagen/quituro.png" alt="Bootstrap" width="220" height="40">
             </a>
         </div>
         {% if is_granted('ROLE_ADMIN') == TRUE or is_granted('ROLE_USER') %}
@@ -27,6 +27,7 @@
                             <li><a class="dropdown-item" href="{{ path('list_invoices') }}">Listado de Facturas</a></li>
                             {% if is_granted('ROLE_ADMIN') %}
                                 <li><a class="dropdown-item" href="{{ path('create_invoice') }}">Crear Factura</a></li>
+                                <li><a class="dropdown-item" href="{{ path('create_advance_invoices') }}">Generar Facturas Adelantadas</a></li>
                             {% endif %}
                         </ul>
                     </li>

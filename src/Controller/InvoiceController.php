@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Invoice;
 use App\Entity\MassiveInvoice;
+use App\Entity\Payment;
 use App\Entity\Subscription;
 use App\Entity\User;
+use App\Form\CreateAdvanceInvoicesType;
 use App\Form\CreateInvoiceType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -14,6 +16,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Validator\Constraints\IsTrue;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class InvoiceController extends MainController
@@ -35,6 +39,7 @@ class InvoiceController extends MainController
         $form = $this->createForm(CreateInvoiceType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $user_id = $request->request->get('userInvoice');
             $id_subscription = $request->request->get('serviceUser');
             $invoice = $form->getData();
             $invoice->setYearInvoiced(date('Y'));
@@ -42,7 +47,7 @@ class InvoiceController extends MainController
             $invoice->setCreatedAt(new \DateTime('now'));
             $invoice->setUpdatedAt(new \DateTime('now'));
 
-            $invoice->setUser($invoice->getUser());
+            $invoice->setUser($this->entityManager->getRepository(User::class)->find($user_id));
             $invoice->setSubscription($this->entityManager->getRepository(Subscription::class)->find($id_subscription));
 
             $this->entityManager->persist($invoice);
@@ -52,6 +57,83 @@ class InvoiceController extends MainController
         }
         return $this->render('invoice/create.html.twig', [
                 'form_create_invoice' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/create/advance-invoices', name: 'create_advance_invoices')]
+    public function createAdvanceInvoices(Request $request): Response
+    {
+        $form = $this->createForm(CreateAdvanceInvoicesType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user_id = $request->request->get('userInvoice');
+            $user = $this->entityManager->getRepository(User::class)->find($user_id);
+            $data_invoice = $form->getData();
+            $value_payment_invoice = $data_invoice->getValue();
+
+            $is_value_payment = !($value_payment_invoice < 5000);
+            $month_invoiced = $request->request->all('month_invoiced_payment');
+
+            $validations = [
+                'monthInvoiced' => [
+                    'field' => $month_invoiced,
+                    'constraint' => [
+                        new NotBlank(message: 'Debe seleccionar por lo menos un mes')]
+                ],
+                'valuePayment' => [
+                    'field' => $is_value_payment,
+                    'constraint' => [
+                        new IsTrue(message: 'El valor de las facturas debe ser mayor o igual a $5.000')]
+                ]
+            ];
+            $errors = $this->validateDataForm($validations);
+            if (count($errors) > 0) {
+                foreach ($errors as $error) {
+                    $this->addFlash('error', $error);
+                }
+                return $this->render('invoice/create_advance_invoices.html.twig', [
+                    'form_create_advance_invoice' => $form->createView(),
+                ]);
+            } else {
+                $subscription_user_id = $request->request->get('serviceUser');
+                $paid_month = '';
+                foreach ($month_invoiced as $month) {
+                    $invoice = new Invoice();
+                    $invoice->setUser($user);
+                    $invoice->setValue(0);
+                    $invoice->setDescription($data_invoice->getDescription());
+                    $invoice->setConcept($data_invoice->getConcept());
+                    $invoice->setYearInvoiced(date('Y'));
+                    $invoice->setStatus('PAGADA');
+                    $invoice->setCreatedAt(new \DateTime('now'));
+                    $invoice->setUpdatedAt(new \DateTime('now'));
+                    $invoice->setSubscription($this->entityManager->getRepository(Subscription::class)->find($subscription_user_id));
+                    $invoice->setMonthInvoiced($month);
+
+                    $payment = new Payment();
+                    $payment->setInvoice($invoice);
+                    $payment->setValue($value_payment_invoice);
+                    $payment->setDescription('Pago factura mes de ' . $month . ' adelantado');
+                    $payment->setMethod('EFECTIVO');
+                    $payment->setMonthInvoiced($month);
+                    $payment->setCreatedAt(new \DateTime('now'));
+                    $payment->setUpdatedAt(new \DateTime('now'));
+                    $this->entityManager->persist($payment);
+
+                    $invoice->addPayment($payment);
+                    $this->entityManager->persist($invoice);
+                    $this->entityManager->flush();
+
+                    $paid_month .= $month . ' - ';
+                }
+                $message_type = 'success';
+                $message = 'Se acaban de generar y pagar las facturas de ' . rtrim($paid_month, '- ') . ' Para el usuario ' . $user->getName();
+                $this->addFlash($message_type, $message);
+                return $this->redirectToRoute('create_advance_invoices');
+            }
+        }
+        return $this->render('invoice/create_advance_invoices.html.twig', [
+            'form_create_advance_invoice' => $form->createView(),
         ]);
     }
 

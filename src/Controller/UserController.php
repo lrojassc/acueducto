@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Form\CreateUserType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -171,5 +172,27 @@ class UserController extends MainController
         ]);
     }
 
+    #[Route('/user/autocomplete', name: 'user_autocomplete', methods: ['GET'])]
+    public function autocomplete(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $name = $request->query->get('name', '');
 
+        $users = [];
+
+        if ($name) {
+            $users = $em->getRepository(User::class)->createQueryBuilder('u')
+                ->where('u.name LIKE :name')
+                ->setParameter('name', '%' . $name . '%')
+                ->getQuery()
+                ->getResult();
+        }
+
+        $results = [];
+
+        foreach ($users as $user) {
+            $results[] = ['id' => $user->getId(), 'name' => $user->getName()];
+        }
+
+        return new JsonResponse($results);
+    }
 }

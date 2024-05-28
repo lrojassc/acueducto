@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Crear Usuario{% endblock %}
+{% block title %}Ver Usuario{% endblock %}
 
 {% block body %}
 <div class="container-fluid">
@@ -64,8 +64,8 @@
                             <input type="text" class="form-control" value="{{ user.fullPayment }}" disabled>
                             <label>Pago Completo</label>
                         </div>
-                        <div class="form-floating mb-3 mt-3 col-4">
-                            <a type="button" class="btn btn-secondary form-control">ESTADO DE CUENTA</a>
+                        <div class="form-floating mb-3 mt-3 col-2">
+                            <a type="button" class="btn btn-secondary form-control" style="padding-top: 16px!important; font-weight: bold" href="{{ path('account_status_by_user', {user: user.id}) }}">ESTADO DE CUENTA</a>
                         </div>
                     </div>
                 </div>
@@ -80,7 +80,6 @@
                                 {% if service.status == 'ACTIVO' %}
                                     <div class="input-group mb-3">
                                         <input type="text" class="form-control" value="{{ service.service }}" readonly>
-                                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal">Facturas Adelantadas</button>
                                     </div>
                                 {% endif %}
                             {% endfor %}
