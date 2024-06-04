@@ -67,6 +67,7 @@
                                         <th class="th-style" scope="col">Factura</th>
                                         <th class="th-style" scope="col">Mes Pagado</th>
                                         <th class="th-style" scope="col">Valor</th>
+                                        <th class="th-style" scope="col">Fecha de Pago</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -79,6 +80,7 @@
                                                 <td>{{ payment.invoice.id }}</td>
                                                 <td>{{ payment.monthInvoiced }}</td>
                                                 <td>${{ payment.value|number_format(0, '.', '.') }}</td>
+                                                <td>{{ payment.createdAt|date('d-m-Y') }}</td>
                                         </tr>
                                         {% set total_payment = total_payment + payment.value %}
                                 {% endfor %}
