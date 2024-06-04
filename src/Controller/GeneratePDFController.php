@@ -66,8 +66,12 @@ class GeneratePDFController extends MainController
                 }
                 $invoice_pending = rtrim($id_pending_invoices, '- ');
                 $invoices_pending = $count_invoice_active - 1;
-                $observation = $invoices_pending >= 1 ? 'Por favor realice el pago de forma inmediata'
-                    : 'Felicitaciones usted se encuentra al día';
+                $observation = 'Felicitaciones usted se encuentra al día';
+                if ($invoices_pending == 1) {
+                    $observation = 'Por favor realice el pago de forma inmediata';
+                } elseif ($invoices_pending >= 2) {
+                    $observation = 'AVISO DE SUSPENSIÓN';
+                }
 
                 // Si el usuario tiene facturas pagas adelantadas no se genera recibo
                 if ($invoices_pending >= 0) {
@@ -84,7 +88,7 @@ class GeneratePDFController extends MainController
                         'period' => 'Del 01 al 30 de ' . $month_invoiced,
                         'invoice_pending' => $invoice_pending,
                         'id_last_invoice' => $id_last_invoice,
-                        'payment_deadline' => 'Hasta el 25 de ' . $this->monthsNumber[date("m", strtotime("+1 month"))],
+                        'payment_deadline' => 'Hasta el 05 de ' . $this->monthsNumber[date("m", strtotime("+1 month"))],
                         'subscription_debt' => $subscription_debt,
                         'description_subscription' => $description_subscription
                     ];
