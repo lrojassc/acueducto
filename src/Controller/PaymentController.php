@@ -160,21 +160,27 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
             $month_invoiced = $report['month_invoiced'];
             $user = $report['user'];
             $concept = $report['concept'];
-            $created_at = $report['created_at'];
+            $created_at_from = $report['from_created_at'];
+            $created_at_until = $report['until_created_at'];
 
             $fields = [
                 'value' => $value,
                 'month_invoiced' => $month_invoiced,
                 'user' => $user,
                 'concept' => $concept,
-                'created_at' => $created_at
+                'created_at' => [$created_at_from, $created_at_until],
             ];
-            if ($value === NULL && empty($month_invoiced) && $user === NULL && empty($concept) && $created_at === NULL) {
+            if ($value === NULL && empty($month_invoiced) && $user === NULL && empty($concept) && $created_at_from === NULL && $created_at_until === NULL) {
                 $this->addFlash('error', 'Debe seleccionar por lo menos un campo para generar el reporte');
                 return $this->redirectToRoute('report');
             } else {
                 // Generar reporte en PDF
                 if ($name_clicked_button === 'send_pdf') {
+                    // Si no existe fecha inicial envia mensaje de error
+                    if (isset($created_at_until) && $created_at_from == NULL) {
+                        $this->addFlash('error', 'Debe seleccionar una fecha de inicio.');
+                        return $this->redirectToRoute('report');
+                    }
                     $payments = $this->entityManager->getRepository(Payment::class)->findPaymentsByFields($fields);
                     if (!empty($payments)) {
                         return $this->PdfController->generatePaymentReport($payments);
@@ -184,6 +190,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
                     }
                 // Generar reporte en excel
                 } else {
+                    if (isset($created_at_until) && $created_at_from == NULL) {
+                        $this->addFlash('error', 'Debe seleccionar una fecha de inicio.');
+                        return $this->redirectToRoute('report');
+                    }
                     $payments = $this->entityManager->getRepository(Payment::class)->findPaymentsByFields($fields);
                     if (!empty($payments)) {
                         return $this->ExcelController->generatePaymentReport($payments);

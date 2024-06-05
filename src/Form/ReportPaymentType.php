@@ -72,9 +72,14 @@ class ReportPaymentType extends AbstractType
                 'expanded' => TRUE,
                 'required' => FALSE
             ])
-            ->add('created_at', DateType::class, [
+            ->add('from_created_at', DateType::class, [
                 'widget' => 'single_text',
-                'label' => 'Fecha de Pago',
+                'label' => 'Fecha de Pago - Desde',
+                'required' => FALSE
+            ])
+            ->add('until_created_at', DateType::class, [
+                'widget' => 'single_text',
+                'label' => 'Fecha de Pago - Hasta',
                 'required' => FALSE
             ])
             ->add('send_pdf', SubmitType::class, [

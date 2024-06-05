@@ -78,10 +78,20 @@ class PaymentRepository extends ServiceEntityRepository
                     break;
                 case 'created_at':
                     if ($field_value !== NULL) {
-                        $timestamp = $field_value->getTimestamp();
-                        $date = date('Y-m-d', $timestamp);
-                        $query->andWhere('p.created_at LIKE :date')
-                            ->setParameter('date', '%'.$date.'%');
+                        if (count($field_value) === 1) {
+                            $timestamp = $field_value->getTimestamp();
+                            $date = date('Y-m-d', $timestamp);
+                            $query->andWhere('p.created_at LIKE :date')
+                                ->setParameter('date', '%'.$date.'%');
+                        } else {
+                            $timestamp_start = $field_value[0]->getTimestamp();
+                            $timestamp_end = $field_value[1]->getTimestamp();
+                            $start_date = date('Y-m-d H:i:s', $timestamp_start);
+                            $end_date = date('Y-m-d', $timestamp_end) . ' 23:59:59';
+                            $query->andWhere('p.created_at BETWEEN :start_date AND :end_date')
+                                ->setParameter('start_date', $start_date)
+                                ->setParameter('end_date', $end_date);
+                        }
                     }
                     break;
             }
