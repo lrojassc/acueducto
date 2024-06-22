@@ -79,7 +79,7 @@ class PaymentRepository extends ServiceEntityRepository
                 case 'created_at':
                     if ($field_value !== NULL) {
                         if (count($field_value) === 1) {
-                            $timestamp = $field_value->getTimestamp();
+                            $timestamp = $field_value[0]->getTimestamp();
                             $date = date('Y-m-d', $timestamp);
                             $query->andWhere('p.created_at LIKE :date')
                                 ->setParameter('date', '%'.$date.'%');
