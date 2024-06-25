@@ -163,12 +163,21 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
             $created_at_from = $report['from_created_at'];
             $created_at_until = $report['until_created_at'];
 
+            // Definir valores para created_at
+            $created_at = [];
+            if ($created_at_from !== NULL) {
+                $created_at[0] = $created_at_from;
+                if ($created_at_until !== NULL) {
+                    $created_at[1] = $created_at_until;
+                }
+            }
+
             $fields = [
                 'value' => $value,
                 'month_invoiced' => $month_invoiced,
                 'user' => $user,
                 'concept' => $concept,
-                'created_at' => [$created_at_from, $created_at_until],
+                'created_at' => $created_at,
             ];
             if ($value === NULL && empty($month_invoiced) && $user === NULL && empty($concept) && $created_at_from === NULL && $created_at_until === NULL) {
                 $this->addFlash('error', 'Debe seleccionar por lo menos un campo para generar el reporte');
@@ -181,10 +190,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
                         $this->addFlash('error', 'Debe seleccionar una fecha de inicio.');
                         return $this->redirectToRoute('report');
                     }
-                    // si no existe fecha final lo saca del array
-                    if ($created_at_until === NULL) {
-                        unset($fields['created_at'][1]);
-                    }
+
                     $payments = $this->entityManager->getRepository(Payment::class)->findPaymentsByFields($fields);
                     if (!empty($payments)) {
                         return $this->PdfController->generatePaymentReport($payments);

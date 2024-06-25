@@ -77,7 +77,7 @@ class PaymentRepository extends ServiceEntityRepository
                     }
                     break;
                 case 'created_at':
-                    if ($field_value !== NULL) {
+                    if (!empty($field_value)) {
                         if (count($field_value) === 1) {
                             $timestamp = $field_value[0]->getTimestamp();
                             $date = date('Y-m-d', $timestamp);
