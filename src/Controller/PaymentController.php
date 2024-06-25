@@ -181,6 +181,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
                         $this->addFlash('error', 'Debe seleccionar una fecha de inicio.');
                         return $this->redirectToRoute('report');
                     }
+                    // si no existe fecha final lo saca del array
+                    if ($created_at_until === NULL) {
+                        unset($fields['created_at'][1]);
+                    }
                     $payments = $this->entityManager->getRepository(Payment::class)->findPaymentsByFields($fields);
                     if (!empty($payments)) {
                         return $this->PdfController->generatePaymentReport($payments);
