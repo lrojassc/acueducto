@@ -73,25 +73,19 @@ class InvoiceRepository extends ServiceEntityRepository
     {
         $users_without_invoices = [];
         foreach ($users as $user) {
-            $user_id = $user->getId();
-            $month_invoiced = TRUE;
-            $invoices = $this->createQueryBuilder('i')
-                ->andWhere('i.user = :user')
-                ->setParameter('user', $user_id)
-                ->andWhere('i.month_invoiced = :month_invoiced')
-                ->setParameter('month_invoiced', $current_month)
-                ->andWhere('i.concept = :concept')
-                ->setParameter('concept', 'MENSUALIDAD')
-                ->getQuery()
-                ->getResult()
-            ;
-            foreach ($invoices as $invoice) {
-                $month_invoiced = $invoice->getMonthInvoiced() !== $current_month;
+            $subscription = $user->getSubscriptions();
+            foreach ($subscription as $service) {
+                $invoices_by_service = $service->getInvoices();
+                $months_billed = [];
+                foreach ($invoices_by_service as $invoice) {
+                    $month_invoiced = $invoice->getMonthInvoiced();
+                    $months_billed[$month_invoiced] = $invoice;
+                }
+                if (array_key_exists($current_month, $months_billed)) {
+                    $user = $user->removeSubscription($service);
+                }
             }
-
-            if ($month_invoiced) {
-                $users_without_invoices[] = $user;
-            }
+            $users_without_invoices[] = $user;
         }
         return $users_without_invoices;
     }
