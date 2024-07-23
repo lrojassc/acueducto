@@ -19,6 +19,14 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+            - '../src/Admin'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Admin\InvoiceAdmin:
+        arguments:
+            - ~
+            - App\Entity\Invoice
+            - ~
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Invoices', label: Invoice }
