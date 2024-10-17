@@ -133,13 +133,16 @@ class UserController extends MainController
 
             $update_services = $this->getServicesByUser($request, 'editActiveServices');
             $new_services = $this->getServicesByUser($request, 'nuevoServicio');
+            $update_full_payment_by_service = $this->getServicesByUser($request, 'editFullPayment');
+            $new_full_payment_by_service = $this->getServicesByUser($request, 'newFullPayment');
             $subscription_by_user = $this->entityManager->getRepository(Subscription::class)->findByActiveSubscription($user->getId());
 
             $count = 0;
             // Actualizar servicios activos
-            foreach ($update_services as $update_service) {
+            foreach ($update_services as $key => $update_service) {
                 if (!empty($update_service)) {
                     $subscription_by_user[$count]->setService($update_service);
+                    $subscription_by_user[$count]->setFullPayment(boolval($update_full_payment_by_service[$key]));
                     $subscription_by_user[$count]->setUpdatedAt(new \DateTime('now'));
                     $this->entityManager->persist($subscription_by_user[$count]);
                 }
@@ -147,12 +150,13 @@ class UserController extends MainController
             }
 
             // Crear nuevos servicios
-            foreach ($new_services as $new_service) {
+            foreach ($new_services as $key => $new_service) {
                 if (!empty($new_service)) {
                     $new_subscription = new Subscription();
                     $new_subscription->setUser($user);
                     $new_subscription->setService($new_service);
                     $new_subscription->setStatus('ACTIVO');
+                    $new_subscription->setFullPayment(boolval($new_full_payment_by_service[$key]));
                     $new_subscription->setCreatedAt(new \DateTime('now'));
                     $new_subscription->setUpdatedAt(new \DateTime('now'));
 

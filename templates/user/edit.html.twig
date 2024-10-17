@@ -95,13 +95,18 @@
                                 <div class="row" id="containerNewServices">
                                     {% for key, service in subscriptions %}
                                         <div class="input-group mb-3">
-                                            <input class="form-check-input input-checkbox" type="checkbox"
-                                                   value="{{ service.fullPayment }}"
-                                                   id="fullPayment{{key+1}}"
-                                                   name="fullPayment{{key+1}}"
-                                                    {% if service.fullPayment == 1 %} checked {% endif %}
+                                            <!-- Se agregar input de tipo hidden para consumir el valor de 0 en el backend-->
+                                            <input type="hidden"
+                                                   id="editFullPayment{{key+1}}"
+                                                   name="editFullPayment{{key+1}}"
+                                                   value="0"
                                             >
-                                            <label class="form-check-label margin-label-checkbox" for="fullPayment">¿Paga Servicio Completo?</label>
+                                            <input class="form-check-input input-checkbox" type="checkbox"
+                                               id="editFullPayment{{key+1}}"
+                                               name="editFullPayment{{key+1}}"
+                                               {% if service.fullPayment == 1 %} value="1" checked {% endif %}
+                                            >
+                                            <label class="form-check-label margin-label-checkbox" for="editFullPayment">¿Paga Servicio Completo?</label>
                                             <input type="text" class="form-control newInput" id="editActiveServices{{key+1}}" name="editActiveServices{{key+1}}" value="{{ service.service }}">
                                             <button type="button" class="btn btn-outline-secondary" id="editActiveServices{{key+1}}" onclick="deleteService({{ service.id }})" >Eliminar</button>
                                         </div>
@@ -149,6 +154,7 @@
         var nuevoDiv = document.createElement("div");
         var nuevoInput = document.createElement("input");
         var nuevoInputCheckbox = document.createElement("input");
+        var nuevoInputCheckbox2 = document.createElement("input");
         var nuevoLabelCheckbox = document.createElement("label");
 
         var containerServices = document.getElementById("containerNewServices");
@@ -164,6 +170,16 @@
             nuevoInput.name = "nuevoServicio" + counter;
             nuevoInput.placeholder = "Descripción del Nuevo Servicio " + counter;
 
+            /*
+            Se define un nuevo input de tipo hidden para poder agregar un valor de 0
+            cuando el check es false de esta forma se puede utilizar el valor en el backend
+             */
+
+            nuevoInputCheckbox2.type = "hidden";
+            nuevoInputCheckbox2.value = '0';
+            nuevoInputCheckbox2.checked = false;
+            nuevoInputCheckbox2.name = "newFullPayment" + counter;
+
             // Agregar nuevo input para checkbox
             nuevoInputCheckbox.type = "checkbox";
             nuevoInputCheckbox.value = '1';
@@ -175,6 +191,7 @@
 
             nuevoDiv.classList = "input-group mb-3";
 
+            nuevoDiv.appendChild(nuevoInputCheckbox2);
             nuevoDiv.appendChild(nuevoInputCheckbox);
             nuevoDiv.appendChild(nuevoLabelCheckbox);
             nuevoDiv.appendChild(nuevoInput);
