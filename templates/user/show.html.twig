@@ -3,6 +3,16 @@
 {% block title %}Ver Usuario{% endblock %}
 
 {% block body %}
+<style>
+    .margin-label-checkbox {
+        margin: 10px !important;
+    }
+
+    .input-checkbox {
+        margin-top: 15px
+    }
+</style>
+
 <div class="container-fluid">
     <div class="justify-content-center">
         <br>
@@ -79,6 +89,12 @@
                             {% for service in user.subscriptions %}
                                 {% if service.status == 'ACTIVO' %}
                                     <div class="input-group mb-3">
+                                        <input class="form-check-input input-checkbox" type="checkbox"
+                                           value="{{ service.fullPayment }}"
+                                           {% if service.fullPayment == 1 %} checked {% endif %}
+                                           disabled
+                                        >
+                                        <label class="form-check-label margin-label-checkbox" for="fullPayment">¿Paga Servicio Completo?</label>
                                         <input type="text" class="form-control" value="{{ service.service }}" readonly>
                                     </div>
                                 {% endif %}

@@ -38,6 +38,9 @@ class Subscription
     #[ORM\OneToMany(targetEntity: Invoice::class, mappedBy: 'subscription')]
     private Collection $invoices;
 
+    #[ORM\Column]
+    private ?bool $fullPayment = null;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -134,6 +137,18 @@ class Subscription
                 $invoice->setSubscription(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isFullPayment(): ?bool
+    {
+        return $this->fullPayment;
+    }
+
+    public function setFullPayment(bool $fullPayment): static
+    {
+        $this->fullPayment = $fullPayment;
 
         return $this;
     }
