@@ -56,6 +56,7 @@ class UserController extends MainController
                 $subscription->setUser($user);
                 $subscription->setService('Residencial 1');
                 $subscription->setStatus('ACTIVO');
+                $subscription->setFullPayment(true);
                 $subscription->setCreatedAt(new \DateTime('now'));
                 $subscription->setUpdatedAt(new \DateTime('now'));
 

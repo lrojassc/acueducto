@@ -40,9 +40,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $paid_subscription = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $full_payment = null;
-
-    #[ORM\Column(length: 255)]
     private ?string $address = null;
 
     #[ORM\Column(length: 255)]
@@ -154,18 +151,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPaidSubscription(string $paid_subscription): static
     {
         $this->paid_subscription = $paid_subscription;
-
-        return $this;
-    }
-
-    public function getFullPayment(): ?string
-    {
-        return $this->full_payment;
-    }
-
-    public function setFullPayment(string $full_payment): static
-    {
-        $this->full_payment = $full_payment;
 
         return $this;
     }

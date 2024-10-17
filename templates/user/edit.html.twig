@@ -76,17 +76,6 @@
                                 <label>{{ field_label(form_edit_user.status) }}</label>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="form-floating mb-3 mt-3 col-4">
-                                <select class="form-select" name="{{ field_name(form_edit_user.full_payment) }}">
-                                    <option selected value="{{ field_value(form_edit_user.full_payment) }}">{{ field_value(form_edit_user.full_payment) }}</option>
-                                    {% for label, value in field_choices(form_edit_user.full_payment) %}
-                                        <option value="{{ value }}">{{ label }}</option>
-                                    {% endfor %}
-                                </select>
-                                <label>{{ field_label(form_edit_user.full_payment) }}</label>
-                            </div>
-                        </div>
 
                         <!-- Sección de servicios activos por usuario o para registrar-->
                         <hr>

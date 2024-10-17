@@ -227,7 +227,7 @@ class InvoiceController extends MainController
                 foreach ($services_by_user as $service) {
                     if ($service->getStatus() === 'ACTIVO') {
                         $invoice = new Invoice();
-                        $invoice->setValue($user->getFullPayment() === 'SI' ? $config['monthly_invoice_value'] : ($config['monthly_invoice_value'] / 2));
+                        $invoice->setValue($service->isFullPayment() ? $config['monthly_invoice_value'] : ($config['monthly_invoice_value'] / 2));
                         $invoice->setDescription('Servicio acueducto '. $service->getService());
                         $invoice->setYearInvoiced(date('Y'));
                         $invoice->setMonthInvoiced($current_month);
