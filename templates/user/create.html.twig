@@ -67,16 +67,6 @@
                         <label>{{ field_label(form_create_user.status) }}</label>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="form-floating mb-3 mt-3 col-4">
-                        <select class="form-select" name="{{ field_name(form_create_user.full_payment) }}">
-                            {% for label, value in field_choices(form_create_user.full_payment) %}
-                                <option value="{{ value }}">{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                        <label>{{ field_label(form_create_user.full_payment) }}</label>
-                    </div>
-                </div>
 
                 {{ form_row(form_create_user.save) }}
                 {{ form_end(form_create_user) }}

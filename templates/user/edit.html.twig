@@ -3,6 +3,16 @@
 {% block title %}Editar Usuario{% endblock %}
 
 {% block body %}
+<style>
+    .margin-label-checkbox {
+        margin: 10px !important;
+    }
+
+    .input-checkbox {
+        margin-top: 15px
+    }
+</style>
+
 <div class="container-fluid">
     <div class="justify-content-center">
         <br>
@@ -66,17 +76,6 @@
                                 <label>{{ field_label(form_edit_user.status) }}</label>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="form-floating mb-3 mt-3 col-4">
-                                <select class="form-select" name="{{ field_name(form_edit_user.full_payment) }}">
-                                    <option selected value="{{ field_value(form_edit_user.full_payment) }}">{{ field_value(form_edit_user.full_payment) }}</option>
-                                    {% for label, value in field_choices(form_edit_user.full_payment) %}
-                                        <option value="{{ value }}">{{ label }}</option>
-                                    {% endfor %}
-                                </select>
-                                <label>{{ field_label(form_edit_user.full_payment) }}</label>
-                            </div>
-                        </div>
 
                         <!-- Sección de servicios activos por usuario o para registrar-->
                         <hr>
@@ -85,7 +84,19 @@
                                 <div class="row" id="containerNewServices">
                                     {% for key, service in subscriptions %}
                                         <div class="input-group mb-3">
-                                            <input type="text" class="form-control" id="editActiveServices{{key+1}}" name="editActiveServices{{key+1}}" value="{{ service.service }}">
+                                            <!-- Se agregar input de tipo hidden para consumir el valor de 0 en el backend-->
+                                            <input type="hidden"
+                                                   id="editFullPayment{{key+1}}"
+                                                   name="editFullPayment{{key+1}}"
+                                                   value="0"
+                                            >
+                                            <input class="form-check-input input-checkbox" type="checkbox"
+                                               id="editFullPayment{{key+1}}"
+                                               name="editFullPayment{{key+1}}"
+                                               {% if service.fullPayment == 1 %} value="1" checked {% endif %}
+                                            >
+                                            <label class="form-check-label margin-label-checkbox" for="editFullPayment">¿Paga Servicio Completo?</label>
+                                            <input type="text" class="form-control newInput" id="editActiveServices{{key+1}}" name="editActiveServices{{key+1}}" value="{{ service.service }}">
                                             <button type="button" class="btn btn-outline-secondary" id="editActiveServices{{key+1}}" onclick="deleteService({{ service.id }})" >Eliminar</button>
                                         </div>
                                     {% endfor %}
@@ -131,10 +142,12 @@
         // Crear nuevo elemento input y label
         var nuevoDiv = document.createElement("div");
         var nuevoInput = document.createElement("input");
-        var nuevoLabel = document.createElement("label");
+        var nuevoInputCheckbox = document.createElement("input");
+        var nuevoInputCheckbox2 = document.createElement("input");
+        var nuevoLabelCheckbox = document.createElement("label");
 
         var containerServices = document.getElementById("containerNewServices");
-        var inputElements = containerServices.querySelectorAll("input");
+        var inputElements = containerServices.querySelectorAll(".newInput");
         var countInputs = inputElements.length;
         var counter = countInputs + 1;
 
@@ -142,15 +155,35 @@
             alert('No es posible agregar mas servicios')
         } else {
             nuevoInput.type = "text";
-            nuevoInput.classList = "form-control mb-3";
+            nuevoInput.classList = "form-control newInput mb-3";
             nuevoInput.name = "nuevoServicio" + counter;
+            nuevoInput.placeholder = "Descripción del Nuevo Servicio " + counter;
 
-            nuevoDiv.classList = "form-floating";
+            /*
+            Se define un nuevo input de tipo hidden para poder agregar un valor de 0
+            cuando el check es false de esta forma se puede utilizar el valor en el backend
+             */
 
-            nuevoLabel.textContent = "Descripción del Nuevo Servicio " + counter;
+            nuevoInputCheckbox2.type = "hidden";
+            nuevoInputCheckbox2.value = '0';
+            nuevoInputCheckbox2.checked = false;
+            nuevoInputCheckbox2.name = "newFullPayment" + counter;
 
+            // Agregar nuevo input para checkbox
+            nuevoInputCheckbox.type = "checkbox";
+            nuevoInputCheckbox.value = '1';
+            nuevoInputCheckbox.checked = true;
+            nuevoInputCheckbox.classList = "form-check-input input-checkbox";
+            nuevoInputCheckbox.name = "newFullPayment" + counter;
+            nuevoLabelCheckbox.textContent = "¿Paga Servicio Completo?";
+            nuevoLabelCheckbox.classList = "form-check-label margin-label-checkbox";
+
+            nuevoDiv.classList = "input-group mb-3";
+
+            nuevoDiv.appendChild(nuevoInputCheckbox2);
+            nuevoDiv.appendChild(nuevoInputCheckbox);
+            nuevoDiv.appendChild(nuevoLabelCheckbox);
             nuevoDiv.appendChild(nuevoInput);
-            nuevoDiv.appendChild(nuevoLabel);
 
             // Obtener el contenedor donde se agregarán los inputs
             var contenedorInputs = document.getElementById("containerNewServices");
