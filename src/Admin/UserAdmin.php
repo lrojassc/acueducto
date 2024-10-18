@@ -30,13 +30,6 @@ class UserAdmin extends AbstractAdmin
                 'readonly' => true,
             ]
         ])
-        ->add('full_payment', ChoiceType::class, [
-            'label' => '¿Paga Servicio Completo?',
-            'choices' => [
-                'SI' => 'SI',
-                'PAGA LA MITAD' => 'MITAD',
-            ]
-        ])
         ->add('address', null, ['label' => 'Direccion'])
         ->add('city', null, ['label' => 'Ciudad'])
         ->add('municipality', null, ['label' => 'Municipio'])
@@ -62,7 +55,6 @@ class UserAdmin extends AbstractAdmin
         $list->add('document_number', null, ['label' => 'Numero de documento']);
         $list->add('phone_number', null, ['label' => 'Telefono']);
         $list->add('paid_subscription', null, ['label' => 'Estado Suscripcion']);
-        $list->add('full_payment', null, ['label' => 'Paga servicio completo']);
         $list->add('address', null, ['label' => 'Direccion']);
         $list->add('status');
         $list->add(ListMapper::NAME_ACTIONS, null, [
@@ -81,7 +73,6 @@ class UserAdmin extends AbstractAdmin
         $show->add('email');
         $show->add('phone_number');
         $show->add('paid_subscription');
-        $show->add('full_payment');
         $show->add('address');
         $show->add('city');
         $show->add('municipality');

@@ -34,3 +34,8 @@ services:
     App\Admin\UserAdmin:
         tags:
             - { name: sonata.admin, model_class: App\Entity\User, manager_type: orm, group: 'Users', label: User }
+
+    admin.config:
+        class: App\Admin\ConfigAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\Config, controller: App\Controller\ConfigAdminController, manager_type: orm, group: admin, label: Config }
