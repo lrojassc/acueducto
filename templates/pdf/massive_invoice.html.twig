@@ -44,17 +44,16 @@
         }
 
         .separate_invoice{
-                background-color: black;
-                height: 1px;
-                margin-bottom: 7px;
-                margin-top: 7px;
+                margin-bottom: 15px;
+                margin-top: 15px;
+                border-style: dashed;
         }
 
         .info_payment_invoice {
                 border-color: black;
                 border-width: 0.5px;
                 border-style: solid;
-                height: 23%
+                height: 20%
         }
 
         .clearfix-dos {
@@ -100,7 +99,7 @@
                                                 </tr>
                                                 <tr>
                                                         <td class="title-bold pdf-massive-td" style="width: 40%; font-size: 15px!important; padding: 2.5px!important;">Código / Servicio</td>
-                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 2.5px!important;">No. {{invoice.user_code}} - {{invoice.service}}</td>
+                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 2.5px!important;">No. {{invoice.user_code}} - {{invoice.service_id}} : {{invoice.service}}<span></span></span></td>
                                                 </tr>
                                                 <tr>
                                                         <td class="title-bold pdf-massive-td" style="width: 40%; font-size: 15px!important; padding: 2.5px!important;">Factura / Valor</td>
@@ -147,21 +146,15 @@
                                         <p style="text-decoration: underline; text-align: center; font-size: 13px!important; margin-bottom: 8px!important;">NIT: 900.260.525-4</p>
                                         <table class="table-invoice-massive">
                                                 <tr>
-                                                        <td class="title-bold pdf-massive-td" style="width: 20%; font-size: 15px!important; padding: 4px!important;">Factura</td>
+                                                        <td class="title-bold pdf-massive-td" style="width: 27%; font-size: 15px!important; padding: 6px!important;">Factura</td>
                                                         <td class="pdf-massive-td" style="font-size: 15px!important; padding: 4px!important;">No. {{invoice.id_last_invoice}}</td>
-                                                        <td class="title-bold pdf-massive-td" style="width: 20%; font-size: 15px!important; padding: 4px!important;">Código</td>
+                                                        <td class="title-bold pdf-massive-td" style="width: 27%; font-size: 15px!important; padding: 5px!important;">Código</td>
                                                         <td class="pdf-massive-td" style="font-size: 15px!important; padding: 4px!important;">No. {{invoice.user_code}}</td>
                                                 </tr>
                                                 <tr>
-                                                        <td class="title-bold pdf-massive-td" style="width: 20%; font-size: 15px!important; padding: 4px!important;">Valor</td>
+                                                        <td class="title-bold pdf-massive-td" style="width: 27%; font-size: 15px!important; padding: 10px!important;">V. Pagado</td>
                                                         <td class="pdf-massive-td" style="font-size: 15px!important; padding: 4px!important;"></td>
-                                                        <td class="title-bold pdf-massive-td" style="width: 20%; font-size: 15px!important; padding: 4px!important;">Fecha</td>
-                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 4px!important;"></td>
-                                                </tr>
-                                                <tr>
-                                                        <td class="title-bold pdf-massive-td" style="width: 20%; height: 28px; font-size: 15px!important; padding: 4px!important;">Recibido</td>
-                                                        <td class="pdf-massive-td" style="font-size: 15px!important; padding: 4px!important;"></td>
-                                                        <td class="title-bold pdf-massive-td" style="width: 20%; height: 28px; font-size: 15px!important; padding: 4px!important;"></td>
+                                                        <td class="title-bold pdf-massive-td" style="width: 27%; font-size: 15px!important; padding: 4px!important;">V. Pendiente</td>
                                                         <td class="pdf-massive-td" style="font-size: 15px!important; padding: 4px!important;"></td>
                                                 </tr>
                                         </table>

@@ -80,6 +80,7 @@ class GeneratePDFController extends MainController
                         'address' => $user->getAddress() . ' - ' . $user->getCity(),
                         'user_code' => $user->getId(),
                         'service' => $service->getService(),
+                        'service_id' => $service->getId(),
                         'total_amount_invoices' => $total_amount_invoices,
                         'arrears' => $invoices_pending,
                         'value_last_invoice' => $value_last_invoice,
