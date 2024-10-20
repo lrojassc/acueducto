@@ -9,6 +9,15 @@
                 {{ flashMessage }}
             </div>
         {% endfor %}
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="alert alert-info col-md-4 mb-2" role="alert">
+                <h1 class="display-6" style="font-size: 35px">Cargue los pagos en formato excel</h1>
+                <div class="input-group">
+                    <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                    <a class="btn btn-success" href="#" type="button" id="inputGroupFileAddon04">Cargar Pagos</a>
+                </div>
+            </div>
+        {% endif %}
         <div class="row">
             <div class="col">
                 <table id="datatable_payments" class="table table-striped table-bordered" data-page-length='{{ number_items }}' style="width: 100%">
