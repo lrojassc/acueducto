@@ -7,6 +7,7 @@ use App\Entity\Invoice;
 use App\Entity\Payment;
 use App\Form\ReportPaymentType;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +16,8 @@ use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-#[AllowDynamicProperties] class PaymentController extends MainController
+#[AllowDynamicProperties]
+class PaymentController extends MainController
 {
 
     /**
@@ -217,6 +219,52 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
         return $this->render('payment/report.html.twig', [
             'form_report' => $form->createView()
         ]);
+    }
+
+    #[Route('/payment/load/payments', name: 'load_payments')]
+    public function loadPayments(Request $request): Response
+    {
+        $file = $request->files->get('loadPayments');
+        try {
+            $spreadsheet = IOFactory::load($file->getPathname());
+            $dataPayments = $spreadsheet->getActiveSheet()->toArray();
+            foreach ($dataPayments as $dataPayment) {
+                $invoice_id = $dataPayment[2];
+                $payment_value = $dataPayment[3];
+
+                $invoice = $this->entityManager->getRepository(Invoice::class)->find($invoice_id);
+                $process_payment = $invoice->getValue() - $payment_value;
+                if ($process_payment === 0) {
+                    $invoice->setValue($process_payment);
+                    $invoice->setStatus('PAGADA');
+                    $invoice->setUpdatedAt(new \DateTime('now'));
+                } elseif ($process_payment != 0) {
+                    $invoice->setValue($process_payment);
+                    $invoice->setStatus('	PAGO PARCIAL');
+                    $invoice->setUpdatedAt(new \DateTime('now'));
+                }
+
+                // Guardar información del pago
+                $payment = new Payment();
+                $payment->setValue($payment_value);
+                $payment->setDescription('Factura Pagada');
+                $payment->setMethod('EFECTIVO');
+                $payment->setMonthInvoiced('PRUEBA');
+                $payment->setInvoice($invoice);
+                $payment->setCreatedAt(new \DateTime('now'));
+                $payment->setUpdatedAt(new \DateTime('now'));
+
+                $this->entityManager->persist($invoice);
+                $this->entityManager->persist($payment);
+                $this->entityManager->flush();
+            }
+            $this->addFlash('success', 'Pagos resitrados de forma exitosa!');
+
+        } catch (\Exception $e) {
+            $this->addFlash('danger', 'No se pudo completar el registro de pagos!');
+        }
+
+        return $this->redirectToRoute('list_payments');
     }
 
 }

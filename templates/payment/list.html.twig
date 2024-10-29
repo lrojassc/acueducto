@@ -4,18 +4,24 @@
 
 {% block body %}
     <div class="container-fluid mt-4">
-        {% for flashMessage in app.flashes('success') %}
-            <div class="alert alert-success col-md-4 offset-4" role="alert">
-                {{ flashMessage }}
-            </div>
+        {% for label, messages in app.session.flashBag.all() %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} col-md-4 offset-4" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
         {% endfor %}
         {% if is_granted('ROLE_ADMIN') %}
             <div class="alert alert-info col-md-4 mb-2" role="alert">
                 <h1 class="display-6" style="font-size: 35px">Cargue los pagos en formato excel</h1>
-                <div class="input-group">
-                    <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
-                    <a class="btn btn-success" href="#" type="button" id="inputGroupFileAddon04">Cargar Pagos</a>
-                </div>
+                <form class="row g-3" action="#" method="post" enctype="multipart/form-data">
+                    <div class="col-auto">
+                        <input type="file" class="form-control" id="loadPayments" name="loadPayments" accept=".xlsx, .xls" required>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-success" type="submit">Cargar Pagos</button>
+                    </div>
+                </form>
             </div>
         {% endif %}
         <div class="row">
