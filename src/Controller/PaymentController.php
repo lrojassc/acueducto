@@ -246,34 +246,36 @@ class PaymentController extends MainController
                         $payment_value = $data_payment[3];
 
                         $invoice = $this->entityManager->getRepository(Invoice::class)->find($invoice_id);
-                        $process_payment = $invoice->getValue() - $payment_value;
-                        if ($invoice->getValue() !== 0 && $invoice->getStatus() !== 'PAGADA') {
-                            if ($process_payment === 0) {
-                                $invoice->setValue($process_payment);
-                                $invoice->setStatus('PAGADA');
-                                $invoice->setUpdatedAt(new \DateTime('now'));
-                            } elseif ($process_payment != 0) {
-                                $invoice->setValue($process_payment);
-                                $invoice->setStatus('PAGO PARCIAL');
-                                $invoice->setUpdatedAt(new \DateTime('now'));
+                        if ($invoice !== NULL) {
+                            $process_payment = $invoice->getValue() - $payment_value;
+                            if ($invoice->getValue() !== 0 && $invoice->getStatus() !== 'PAGADA') {
+                                if ($process_payment === 0) {
+                                    $invoice->setValue($process_payment);
+                                    $invoice->setStatus('PAGADA');
+                                    $invoice->setUpdatedAt(new \DateTime('now'));
+                                } elseif ($process_payment != 0) {
+                                    $invoice->setValue($process_payment);
+                                    $invoice->setStatus('PAGO PARCIAL');
+                                    $invoice->setUpdatedAt(new \DateTime('now'));
+                                }
+
+                                // Guardar información del pago
+                                $payment = new Payment();
+                                $payment->setValue($payment_value);
+                                $payment->setDescription('Pago servicio de acueducto');
+                                $payment->setMethod('EFECTIVO');
+                                $payment->setMonthInvoiced($invoice->getMonthInvoiced());
+                                $payment->setInvoice($invoice);
+                                $payment->setCreatedAt(new \DateTime('now'));
+                                $payment->setUpdatedAt(new \DateTime('now'));
+
+                                $this->entityManager->persist($invoice);
+                                $this->entityManager->persist($payment);
+                                $this->entityManager->flush();
                             }
-
-                            // Guardar información del pago
-                            $payment = new Payment();
-                            $payment->setValue($payment_value);
-                            $payment->setDescription('Pago servicio de acueducto');
-                            $payment->setMethod('EFECTIVO');
-                            $payment->setMonthInvoiced($invoice->getMonthInvoiced());
-                            $payment->setInvoice($invoice);
-                            $payment->setCreatedAt(new \DateTime('now'));
-                            $payment->setUpdatedAt(new \DateTime('now'));
-
-                            $this->entityManager->persist($invoice);
-                            $this->entityManager->persist($payment);
-                            $this->entityManager->flush();
+                            $type_message = 'success';
+                            $message = 'Pagos cargados de forma exitosa';
                         }
-                        $type_message = 'success';
-                        $message = 'Pagos cargados de forma exitosa';
                     }
                 } else {
                     $type_message = 'danger';
