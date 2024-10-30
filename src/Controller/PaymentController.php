@@ -224,47 +224,86 @@ class PaymentController extends MainController
     #[Route('/payment/load/payments', name: 'load_payments')]
     public function loadPayments(Request $request): Response
     {
+        $type_message = '';
+        $message = '';
         $file = $request->files->get('loadPayments');
         try {
             $spreadsheet = IOFactory::load($file->getPathname());
-            $dataPayments = $spreadsheet->getActiveSheet()->toArray();
-            foreach ($dataPayments as $dataPayment) {
-                $invoice_id = $dataPayment[2];
-                $payment_value = $dataPayment[3];
+            $data_payments = $spreadsheet->getActiveSheet()->toArray();
 
-                $invoice = $this->entityManager->getRepository(Invoice::class)->find($invoice_id);
-                $process_payment = $invoice->getValue() - $payment_value;
-                if ($process_payment === 0) {
-                    $invoice->setValue($process_payment);
-                    $invoice->setStatus('PAGADA');
-                    $invoice->setUpdatedAt(new \DateTime('now'));
-                } elseif ($process_payment != 0) {
-                    $invoice->setValue($process_payment);
-                    $invoice->setStatus('	PAGO PARCIAL');
-                    $invoice->setUpdatedAt(new \DateTime('now'));
+            // Verificar que el archivo no este vacio
+            if (empty($data_payments[0][0])) {
+                $type_message = 'danger';
+                $message = 'El archivo no puede estar vacio';
+            } else {
+                // Veriricar la estructura del archivo
+                if ($this->validateFileStructure($data_payments[0])) {
+                    // Sacar del array de datos el array que valida la estructura del contenido
+                    unset($data_payments[0]);
+
+                    foreach ($data_payments as $data_payment) {
+                        $invoice_id = $data_payment[2];
+                        $payment_value = $data_payment[3];
+
+                        $invoice = $this->entityManager->getRepository(Invoice::class)->find($invoice_id);
+                        $process_payment = $invoice->getValue() - $payment_value;
+                        if ($invoice->getValue() !== 0 && $invoice->getStatus() !== 'PAGADA') {
+                            if ($process_payment === 0) {
+                                $invoice->setValue($process_payment);
+                                $invoice->setStatus('PAGADA');
+                                $invoice->setUpdatedAt(new \DateTime('now'));
+                            } elseif ($process_payment != 0) {
+                                $invoice->setValue($process_payment);
+                                $invoice->setStatus('PAGO PARCIAL');
+                                $invoice->setUpdatedAt(new \DateTime('now'));
+                            }
+
+                            // Guardar información del pago
+                            $payment = new Payment();
+                            $payment->setValue($payment_value);
+                            $payment->setDescription('Pago servicio de acueducto');
+                            $payment->setMethod('EFECTIVO');
+                            $payment->setMonthInvoiced($invoice->getMonthInvoiced());
+                            $payment->setInvoice($invoice);
+                            $payment->setCreatedAt(new \DateTime('now'));
+                            $payment->setUpdatedAt(new \DateTime('now'));
+
+                            $this->entityManager->persist($invoice);
+                            $this->entityManager->persist($payment);
+                            $this->entityManager->flush();
+                        }
+                        $type_message = 'success';
+                        $message = 'Pagos cargados de forma exitosa';
+                    }
+                } else {
+                    $type_message = 'danger';
+                    $message = 'La estructura del archivo es incorrecta';
                 }
 
-                // Guardar información del pago
-                $payment = new Payment();
-                $payment->setValue($payment_value);
-                $payment->setDescription('Factura Pagada');
-                $payment->setMethod('EFECTIVO');
-                $payment->setMonthInvoiced('PRUEBA');
-                $payment->setInvoice($invoice);
-                $payment->setCreatedAt(new \DateTime('now'));
-                $payment->setUpdatedAt(new \DateTime('now'));
-
-                $this->entityManager->persist($invoice);
-                $this->entityManager->persist($payment);
-                $this->entityManager->flush();
             }
-            $this->addFlash('success', 'Pagos resitrados de forma exitosa!');
+            $this->addFlash($type_message, $message);
 
         } catch (\Exception $e) {
-            $this->addFlash('danger', 'No se pudo completar el registro de pagos!');
+            $this->addFlash('danger', 'Hubo un error para cargar los pagos!');
         }
 
         return $this->redirectToRoute('list_payments');
+    }
+
+    /**
+     * Validar la estructura del encabezado de archivo
+     *
+     * @param array $file_structure
+     *
+     * @return bool
+     */
+    public function validateFileStructure(array $file_structure): bool
+    {
+        $validate_file_structure = false;
+        if ($file_structure[0] == 'usuario' && $file_structure[1] == 'servicio' && $file_structure[2] == 'factura' && $file_structure[3] == 'valor') {
+            $validate_file_structure = true;
+        }
+        return $validate_file_structure;
     }
 
 }

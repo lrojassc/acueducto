@@ -14,7 +14,7 @@
         {% if is_granted('ROLE_ADMIN') %}
             <div class="alert alert-info col-md-4 mb-2" role="alert">
                 <h1 class="display-6" style="font-size: 35px">Cargue los pagos en formato excel</h1>
-                <form class="row g-3" action="#" method="post" enctype="multipart/form-data">
+                <form class="row g-3" action="{{ path('load_payments') }}" method="post" enctype="multipart/form-data">
                     <div class="col-auto">
                         <input type="file" class="form-control" id="loadPayments" name="loadPayments" accept=".xlsx, .xls" required>
                     </div>
