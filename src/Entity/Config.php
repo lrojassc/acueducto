@@ -21,6 +21,9 @@ class Config
     private ?string $month_invoiced = null;
 
     #[ORM\Column(length: 255)]
+    private ?string $year_invoiced = null;
+
+    #[ORM\Column(length: 255)]
     private ?string $value_subscription = null;
 
     #[ORM\Column(length: 255)]
@@ -57,6 +60,18 @@ class Config
     public function setMonthInvoiced(string $month_invoiced): static
     {
         $this->month_invoiced = $month_invoiced;
+
+        return $this;
+    }
+
+    public function getYearInvoiced(): ?string
+    {
+        return $this->year_invoiced;
+    }
+
+    public function setYearInvoiced(string $year_invoiced): static
+    {
+        $this->year_invoiced = $year_invoiced;
 
         return $this;
     }

@@ -37,6 +37,10 @@ class AdminConfigType extends AbstractType
                     'DICIEMBRE' => 'DICIEMBRE',
                 ]
             ])
+            ->add('year_invoiced', TextType::class, [
+                'label' => 'Definir Año Para Facturas',
+                'required' => TRUE,
+            ])
             ->add('value_subscription', TextType::class, [
                 'label' => 'Definir Valor del Derecho de Suscripción',
                 'required' => TRUE,

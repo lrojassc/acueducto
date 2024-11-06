@@ -36,13 +36,15 @@ class InvoiceController extends MainController
     #[Route('/create/invoice', name: 'create_invoice')]
     public function create(Request $request): Response
     {
+        $config = $this->getConfig();
+        $billing_year = $config['billing_year'];
         $form = $this->createForm(CreateInvoiceType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $user_id = $request->request->get('userInvoice');
             $id_subscription = $request->request->get('serviceUser');
             $invoice = $form->getData();
-            $invoice->setYearInvoiced(date('Y'));
+            $invoice->setYearInvoiced($billing_year);
             $invoice->setStatus('PENDIENTE');
             $invoice->setCreatedAt(new \DateTime('now'));
             $invoice->setUpdatedAt(new \DateTime('now'));
@@ -63,6 +65,8 @@ class InvoiceController extends MainController
     #[Route('/create/advance-invoices', name: 'create_advance_invoices')]
     public function createAdvanceInvoices(Request $request): Response
     {
+        $config = $this->getConfig();
+        $billing_year = $config['billing_year'];
         $form = $this->createForm(CreateAdvanceInvoicesType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -98,33 +102,39 @@ class InvoiceController extends MainController
                 $subscription_user_id = $request->request->get('serviceUser');
                 $paid_month = '';
                 foreach ($month_invoiced as $month) {
-                    $invoice = new Invoice();
-                    $invoice->setUser($user);
-                    $invoice->setValue(0);
-                    $invoice->setDescription($data_invoice->getDescription());
-                    $invoice->setConcept($data_invoice->getConcept());
-                    $invoice->setYearInvoiced(date('Y'));
-                    $invoice->setStatus('PAGADA');
-                    $invoice->setCreatedAt(new \DateTime('now'));
-                    $invoice->setUpdatedAt(new \DateTime('now'));
-                    $invoice->setSubscription($this->entityManager->getRepository(Subscription::class)->find($subscription_user_id));
-                    $invoice->setMonthInvoiced($month);
+                    $is_billed_this_month = $this->entityManager->getRepository(Invoice::class)->findInvoiceByMonthYearAndUser($user_id, $month, $billing_year);
+                    if (!$is_billed_this_month) {
+                        $invoice = new Invoice();
+                        $invoice->setUser($user);
+                        $invoice->setValue(0);
+                        $invoice->setDescription($data_invoice->getDescription());
+                        $invoice->setConcept($data_invoice->getConcept());
+                        $invoice->setYearInvoiced($billing_year);
+                        $invoice->setStatus('PAGADA');
+                        $invoice->setCreatedAt(new \DateTime('now'));
+                        $invoice->setUpdatedAt(new \DateTime('now'));
+                        $invoice->setSubscription($this->entityManager->getRepository(Subscription::class)->find($subscription_user_id));
+                        $invoice->setMonthInvoiced($month);
 
-                    $payment = new Payment();
-                    $payment->setInvoice($invoice);
-                    $payment->setValue($value_payment_invoice);
-                    $payment->setDescription('Pago factura mes de ' . $month . ' adelantado');
-                    $payment->setMethod('EFECTIVO');
-                    $payment->setMonthInvoiced($month);
-                    $payment->setCreatedAt(new \DateTime('now'));
-                    $payment->setUpdatedAt(new \DateTime('now'));
-                    $this->entityManager->persist($payment);
+                        $payment = new Payment();
+                        $payment->setInvoice($invoice);
+                        $payment->setValue($value_payment_invoice);
+                        $payment->setDescription('Pago factura mes de ' . $month . ' adelantado');
+                        $payment->setMethod('EFECTIVO');
+                        $payment->setMonthInvoiced($month);
+                        $payment->setCreatedAt(new \DateTime('now'));
+                        $payment->setUpdatedAt(new \DateTime('now'));
+                        $this->entityManager->persist($payment);
 
-                    $invoice->addPayment($payment);
-                    $this->entityManager->persist($invoice);
-                    $this->entityManager->flush();
+                        $invoice->addPayment($payment);
+                        $this->entityManager->persist($invoice);
+                        $this->entityManager->flush();
 
-                    $paid_month .= $month . ' - ';
+                        $paid_month .= $month . ' - ';
+                    } else {
+                        $this->addFlash('error', 'No se puede volver a generar la factura del mes de ' . $month);
+                        return $this->redirectToRoute('create_advance_invoices');
+                    }
                 }
                 $message_type = 'success';
                 $message = 'Se acaban de generar y pagar las facturas de ' . rtrim($paid_month, '- ') . ' Para el usuario ' . $user->getName();
@@ -134,6 +144,7 @@ class InvoiceController extends MainController
         }
         return $this->render('invoice/create_advance_invoices.html.twig', [
             'form_create_advance_invoice' => $form->createView(),
+            'billing_year' => $billing_year,
         ]);
     }
 
@@ -211,6 +222,7 @@ class InvoiceController extends MainController
     public function massive()
     {
         $config = $this->getConfig();
+        $billing_year = $config['billing_year'];
         $current_month = $config['bulk_billing_month'];
         $message_type = 'error';
         $message = 'No se pueden volver a generar el masivo de facturas del mes de ' . $current_month;
@@ -229,7 +241,7 @@ class InvoiceController extends MainController
                         $invoice = new Invoice();
                         $invoice->setValue($service->isFullPayment() ? $config['monthly_invoice_value'] : ($config['monthly_invoice_value'] / 2));
                         $invoice->setDescription('Servicio acueducto '. $service->getService());
-                        $invoice->setYearInvoiced(date('Y'));
+                        $invoice->setYearInvoiced($billing_year);
                         $invoice->setMonthInvoiced($current_month);
                         $invoice->setConcept('MENSUALIDAD');
                         $invoice->setStatus('PENDIENTE');
@@ -243,7 +255,7 @@ class InvoiceController extends MainController
                 }
             }
 
-            $massive_invoice->setYear(date('Y'));
+            $massive_invoice->setYear($billing_year);
             $massive_invoice->setMonth($current_month);
             $massive_invoice->setStatus('GENERADO');
             $massive_invoice->setCreatedAt(new \DateTime('now'));

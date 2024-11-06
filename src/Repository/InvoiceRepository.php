@@ -89,4 +89,19 @@ class InvoiceRepository extends ServiceEntityRepository
         }
         return $users_without_invoices;
     }
+
+    public function findInvoiceByMonthYearAndUser($user_id, $month, $year): bool
+    {
+        $query = $this->createQueryBuilder('i')
+            ->andWhere('i.user = :user_id')
+            ->andWhere('i.month_invoiced = :month')
+            ->andWhere('i.year_invoiced = :year')
+            ->setParameter('user_id', $user_id)
+            ->setParameter('month', $month)
+            ->setParameter('year', $year)
+            ->getQuery()
+            ->getResult();
+
+        return !empty($query);
+    }
 }

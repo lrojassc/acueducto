@@ -82,12 +82,14 @@ class MainController extends AbstractController
         $monthly_invoice_value = $data->getValueInvoice() !== null ? $data->getValueInvoice() : 10000;
         $value_subscription = $data->getValueSubscription() !== null ? $data->getValueSubscription() : 700000;
         $bulk_billing_month = $data->getMonthInvoiced() !== null ? $data->getMonthInvoiced() : $this->monthsNumber[date('m')];
+        $billing_year = $data->getYearInvoiced() !== null ? $data->getYearInvoiced() : $this->monthsNumber[date('y')];
         $number_items = $data->getNumberRecordsTable() !== null ? $data->getNumberRecordsTable() : 20;
 
         return [
             'monthly_invoice_value' => $monthly_invoice_value,
             'value_subscription' => $value_subscription,
             'bulk_billing_month' => $bulk_billing_month,
+            'billing_year' => $billing_year,
             'number_items' => $number_items,
         ];
     }

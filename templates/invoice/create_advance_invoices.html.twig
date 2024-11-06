@@ -18,7 +18,7 @@
         {% endfor %}
 
         <div class="card mb-4">
-            <h5 class="card-header">Creación de Facturas Adelantadas por Usuario Año: {{  "now"|date("Y") }}</h5>
+            <h5 class="card-header">Creación de Facturas Adelantadas por Usuario Año: {{ billing_year }}</h5>
             <div class="card-body">
                 {{ form_start(form_create_advance_invoice) }}
                     <div class="form-floating mb-3 mt-3 col">
